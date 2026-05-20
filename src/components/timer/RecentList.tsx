@@ -1,8 +1,9 @@
 import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TimesheetDurationAside } from "@/components/timesheet/TimesheetMetaAside";
+import { TimesheetEntryLabels } from "@/components/timesheet/TimesheetEntryLabels";
 import { useTranslation } from "@/i18n";
 import { useRecent, useRestartTimer } from "@/hooks/useApi";
-import { formatDuration } from "@/lib/utils";
 
 export function RecentList() {
   const { t } = useTranslation();
@@ -25,31 +26,25 @@ export function RecentList() {
       {!isLoading && recent.length === 0 && (
         <p className="text-sm text-muted-foreground">{t("timer.recentEmpty")}</p>
       )}
-      <ul className="divide-y divide-border/60">
+      <ul className="space-y-3">
         {recent.map((entry) => (
           <li
             key={entry.id}
-            className="flex items-center justify-between gap-4 py-4 first:pt-0"
+            className="flex items-center gap-5 rounded-lg py-2"
           >
-            <div className="min-w-0">
-              <p className="truncate font-medium">
-                {entry.project.customer?.name ?? entry.project.name} ·{" "}
-                {entry.project.name}
-              </p>
-              <p className="truncate text-sm text-muted-foreground">
-                {entry.activity.name}
-                {entry.duration != null &&
-                  ` · ${formatDuration(entry.duration)}`}
-                {entry.description && ` · ${entry.description}`}
-              </p>
+            <TimesheetDurationAside duration={entry.duration} />
+            <div className="min-w-0 flex-1">
+              <TimesheetEntryLabels entry={entry} />
             </div>
             <Button
+              variant="outline"
               size="sm"
-              variant="ghost"
+              className="shrink-0"
               disabled={restartTimer.isPending}
               onClick={() => restartTimer.mutate(entry.id)}
             >
-              <RotateCcw className="h-4 w-4" />
+              <RotateCcw className="mr-2 h-4 w-4" />
+              {t("timer.restart")}
             </Button>
           </li>
         ))}

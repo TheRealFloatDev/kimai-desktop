@@ -76,18 +76,23 @@ export interface TimesheetCollection {
   exported?: boolean;
 }
 
-export interface CustomerRef {
+export interface KimaiColorEntity {
+  color?: string;
+  color_safe?: string;
+}
+
+export interface CustomerRef extends KimaiColorEntity {
   id: number;
   name: string;
 }
 
-export interface ProjectExpanded {
+export interface ProjectExpanded extends KimaiColorEntity {
   id: number;
   name: string;
   customer?: CustomerRef;
 }
 
-export interface ActivityExpanded {
+export interface ActivityExpanded extends KimaiColorEntity {
   id: number;
   name: string;
 }

@@ -63,7 +63,8 @@
     "formTags": "Tags",
     "formTagsPlaceholder": "Komma-gescheiden",
     "formBillable": "Factureerbaar",
-    "formStart": "Timer starten"
+    "formStart": "Timer starten",
+    "restart": "Opnieuw starten"
   },
   "history": {
     "title": "Geschiedenis",

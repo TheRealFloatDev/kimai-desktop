@@ -63,7 +63,8 @@
     "formTags": "Tags",
     "formTagsPlaceholder": "Comma-separated",
     "formBillable": "Billable",
-    "formStart": "Start timer"
+    "formStart": "Start timer",
+    "restart": "Start again"
   },
   "history": {
     "title": "History",

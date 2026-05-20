@@ -37,7 +37,7 @@ function DashboardPage() {
     <div className="mx-auto max-w-5xl space-y-16">
       <ActiveTimer />
 
-      <section className="grid gap-10 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-10 border-b border-border/50 pb-16 sm:grid-cols-2 xl:grid-cols-4">
         <StatBlock
           label={t("dashboard.statsToday")}
           value={isLoading ? "…" : formatWorkingHours(stats?.today_seconds ?? 0)}

@@ -63,6 +63,15 @@ export function formatTimesheetCost(
 }
 
 /** e.g. 2h 15m from seconds */
+export function kimaiEntityColor(
+  entity?: { color?: string; color_safe?: string } | null,
+): string | undefined {
+  if (!entity) return undefined;
+  const c = entity.color ?? entity.color_safe;
+  if (!c || !/^#[0-9A-Fa-f]{3,8}$/.test(c)) return undefined;
+  return c;
+}
+
 export function formatWorkingHours(seconds: number): string {
   if (seconds <= 0) return "0h";
   const h = Math.floor(seconds / 3600);

@@ -13,8 +13,13 @@ vi.mock("@/hooks/useApi", () => ({
         id: 5,
         begin: "2026-01-01T10:00:00",
         duration: 3600,
-        project: { id: 1, name: "Web", customer: { id: 1, name: "ACME" } },
-        activity: { id: 2, name: "Design" },
+        project: {
+          id: 1,
+          name: "Web",
+          color: "#3366cc",
+          customer: { id: 1, name: "ACME", color: "#dd1d00" },
+        },
+        activity: { id: 2, name: "Design", color: "#4caf50" },
         billable: true,
       },
     ],
@@ -33,8 +38,7 @@ describe("RecentList", () => {
       </QueryClientProvider>,
     );
 
-    const buttons = screen.getAllByRole("button");
-    await user.click(buttons[0]);
+    await user.click(screen.getByRole("button", { name: /Start again/i }));
 
     expect(mutate).toHaveBeenCalledWith(5);
   });

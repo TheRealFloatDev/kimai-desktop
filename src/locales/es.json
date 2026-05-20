@@ -63,7 +63,8 @@
     "formTags": "Etiquetas",
     "formTagsPlaceholder": "Separadas por comas",
     "formBillable": "Facturable",
-    "formStart": "Iniciar temporizador"
+    "formStart": "Iniciar temporizador",
+    "restart": "Iniciar de nuevo"
   },
   "history": {
     "title": "Historial",

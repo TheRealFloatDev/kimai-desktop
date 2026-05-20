@@ -89,6 +89,10 @@ pub struct TimesheetCollection {
 pub struct CustomerRef {
     pub id: i64,
     pub name: String,
+    #[serde(default)]
+    pub color: Option<String>,
+    #[serde(rename = "color-safe", default)]
+    pub color_safe: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -96,6 +100,10 @@ pub struct ProjectExpanded {
     pub id: i64,
     pub name: String,
     pub customer: Option<CustomerRef>,
+    #[serde(default)]
+    pub color: Option<String>,
+    #[serde(rename = "color-safe", default)]
+    pub color_safe: Option<String>,
 }
 
 impl ProjectExpanded {
@@ -108,6 +116,10 @@ impl ProjectExpanded {
 pub struct ActivityExpanded {
     pub id: i64,
     pub name: String,
+    #[serde(default)]
+    pub color: Option<String>,
+    #[serde(rename = "color-safe", default)]
+    pub color_safe: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

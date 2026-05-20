@@ -2,7 +2,7 @@ import { createRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { TimesheetDataTable } from "@/components/timesheet/TimesheetDataTable";
+import { HistoryList } from "@/components/timesheet/HistoryList";
 import { TimesheetEditDialog } from "@/components/timesheet/TimesheetEditDialog";
 import { TimesheetFilters } from "@/components/timesheet/TimesheetFilters";
 import { useTranslation } from "@/i18n";
@@ -53,7 +53,7 @@ function HistoryPage() {
   const deleteTimesheet = useDeleteTimesheet();
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-8">
+    <div className="mx-auto flex h-full min-h-0 max-w-5xl flex-col gap-8">
       <header className="shrink-0">
         <h2 className="text-2xl font-semibold tracking-tight">
           {t("history.title")}
@@ -86,12 +86,12 @@ function HistoryPage() {
           </AlertDescription>
         </Alert>
       )}
-      <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-border/50">
+      <div className="min-h-0 flex-1 overflow-auto">
         {isLoading && (
-          <p className="p-6 text-muted-foreground">{t("history.loading")}</p>
+          <p className="text-muted-foreground">{t("history.loading")}</p>
         )}
         {!isLoading && !isError && (
-          <TimesheetDataTable
+          <HistoryList
             timesheets={timesheets}
             onEdit={(ts) => {
               setEditTarget(ts);

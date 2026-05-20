@@ -63,7 +63,8 @@
     "formTags": "Tags",
     "formTagsPlaceholder": "Komma-getrennt",
     "formBillable": "Abrechenbar",
-    "formStart": "Timer starten"
+    "formStart": "Timer starten",
+    "restart": "Erneut starten"
   },
   "history": {
     "title": "History",
