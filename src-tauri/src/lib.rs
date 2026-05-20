@@ -122,8 +122,9 @@ pub fn run() {
                         api.prevent_exit();
                     }
                 }
+                #[cfg(target_os = "macos")]
                 RunEvent::Reopen { .. } => {
-                    // macOS: Dock-Icon angeklickt → Fenster wieder anzeigen.
+                    // Dock-Icon angeklickt → Fenster wieder anzeigen.
                     show_window(app_handle);
                 }
                 _ => {}
