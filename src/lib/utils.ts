@@ -5,11 +5,24 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/** Dashboard: full HH:MM:SS */
 export function formatDuration(seconds: number): string {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   const s = seconds % 60;
   return [h, m, s].map((n) => String(n).padStart(2, "0")).join(":");
+}
+
+/** Tray: MM:SS under 1h, HH:MM from 1h upward */
+export function formatTrayDuration(seconds: number): string {
+  if (seconds < 3600) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  }
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
 export function parseKimaiDate(dateStr: string): Date {
@@ -29,5 +42,44 @@ export function todayBeginParam(): string {
 }
 
 export function formatDateTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleString();
+  return new Date(dateStr).toLocaleString("de-DE");
+}
+
+export function formatCurrency(amount: number, currency = "EUR"): string {
+  return new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency,
+  }).format(amount);
+}
+
+/** e.g. 2h 15m from seconds */
+export function formatWorkingHours(seconds: number): string {
+  if (seconds <= 0) return "0h";
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (h === 0) return `${m}m`;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}m`;
+}
+
+export function splitDateTimeLocal(isoOrLocal: string): {
+  date: Date | undefined;
+  time: string;
+} {
+  if (!isoOrLocal) return { date: undefined, time: "00:00" };
+  const d = new Date(isoOrLocal);
+  if (Number.isNaN(d.getTime())) return { date: undefined, time: "00:00" };
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return {
+    date: d,
+    time: `${pad(d.getHours())}:${pad(d.getMinutes())}`,
+  };
+}
+
+export function mergeDateAndTime(date: Date, time: string): string {
+  const [h, m] = time.split(":").map(Number);
+  const d = new Date(date);
+  d.setHours(h || 0, m || 0, 0, 0);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
 }

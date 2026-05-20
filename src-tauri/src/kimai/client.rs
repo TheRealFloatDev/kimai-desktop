@@ -322,11 +322,11 @@ impl KimaiClient {
             .await
     }
 
-    pub async fn get_today_timesheets(&self) -> Result<Vec<TimesheetCollection>, String> {
+    pub async fn get_today_timesheets(&self) -> Result<Vec<TimesheetCollectionExpanded>, String> {
         let today = Local::now().date_naive();
         let begin = format!("{}T00:00:00", today.format("%Y-%m-%d"));
         let path = format!(
-            "/api/timesheets?begin={}&orderBy=begin&order=DESC&size=100",
+            "/api/timesheets?begin={}&orderBy=begin&order=DESC&size=100&full=1",
             begin
         );
         self.get(&path).await
@@ -335,7 +335,7 @@ impl KimaiClient {
     pub async fn list_timesheets(
         &self,
         params: TimesheetFilterParams,
-    ) -> Result<Vec<TimesheetCollection>, String> {
+    ) -> Result<Vec<TimesheetCollectionExpanded>, String> {
         let mut query = vec![
             ("full".to_string(), "1".to_string()),
             (

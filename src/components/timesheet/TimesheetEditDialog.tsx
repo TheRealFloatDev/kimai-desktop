@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { DateTimePicker } from "@/components/ui/datetime-picker";
 import {
   Dialog,
   DialogContent,
@@ -23,10 +24,10 @@ import {
   useProjects,
   useUpdateTimesheet,
 } from "@/hooks/useApi";
-import type { TimesheetCollection } from "@/lib/types.generated";
+import type { TimesheetCollectionExpanded } from "@/lib/types.generated";
 
 interface TimesheetEditDialogProps {
-  timesheet: TimesheetCollection | null;
+  timesheet: TimesheetCollectionExpanded | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -38,8 +39,8 @@ export function TimesheetEditDialog({
 }: TimesheetEditDialogProps) {
   const [projectId, setProjectId] = useState("");
   const [activityId, setActivityId] = useState("");
-  const [begin, setBegin] = useState("");
-  const [end, setEnd] = useState("");
+  const [begin, setBegin] = useState<string | undefined>();
+  const [end, setEnd] = useState<string | undefined>();
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [billable, setBillable] = useState(true);
@@ -52,10 +53,10 @@ export function TimesheetEditDialog({
 
   useEffect(() => {
     if (!timesheet) return;
-    setProjectId(String(timesheet.project));
-    setActivityId(String(timesheet.activity));
-    setBegin(timesheet.begin.slice(0, 16));
-    setEnd(timesheet.end?.slice(0, 16) ?? "");
+    setProjectId(String(timesheet.project.id));
+    setActivityId(String(timesheet.activity.id));
+    setBegin(timesheet.begin);
+    setEnd(timesheet.end);
     setDescription(timesheet.description ?? "");
     setTags(timesheet.tags?.join(", ") ?? "");
     setBillable(timesheet.billable ?? true);
@@ -69,8 +70,8 @@ export function TimesheetEditDialog({
         form: {
           project: Number(projectId),
           activity: Number(activityId),
-          begin: begin ? `${begin}:00` : undefined,
-          end: end ? `${end}:00` : undefined,
+          begin,
+          end,
           description: description || undefined,
           tags: tags || undefined,
           billable,
@@ -87,24 +88,8 @@ export function TimesheetEditDialog({
           <DialogTitle>Timesheet bearbeiten</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Beginn</Label>
-              <Input
-                type="datetime-local"
-                value={begin}
-                onChange={(e) => setBegin(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Ende</Label>
-              <Input
-                type="datetime-local"
-                value={end}
-                onChange={(e) => setEnd(e.target.value)}
-              />
-            </div>
-          </div>
+          <DateTimePicker label="Beginn" value={begin} onChange={setBegin} />
+          <DateTimePicker label="Ende" value={end} onChange={setEnd} />
           <div className="space-y-2">
             <Label>Projekt</Label>
             <Select value={projectId} onValueChange={setProjectId}>

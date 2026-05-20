@@ -14,10 +14,10 @@
       {
         "label": "main",
         "title": "Kimai Desktop",
-        "width": 960,
-        "height": 700,
-        "minWidth": 800,
-        "minHeight": 600
+        "width": 1280,
+        "height": 800,
+        "minWidth": 1100,
+        "minHeight": 650
       }
     ],
     "security": {

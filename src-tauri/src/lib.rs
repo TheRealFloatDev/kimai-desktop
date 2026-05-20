@@ -7,8 +7,8 @@ mod tray;
 use commands::{
     clear_stored_credentials, delete_timesheet, get_active_timer, get_active_timer_duration,
     get_activities, get_credentials, get_customers, get_me, get_projects, get_recent,
-    get_today_timesheets, list_timesheets, restart_timer, set_credentials, start_timer,
-    stop_timer,
+    get_today_timesheets, get_working_stats, list_timesheets, restart_timer, set_credentials,
+    start_timer, stop_timer,
     update_timesheet, validate_connection, validate_stored_connection,
 };
 use state::AppState;
@@ -44,6 +44,7 @@ pub fn run() {
             get_active_timer_duration,
             get_recent,
             get_today_timesheets,
+            get_working_stats,
             list_timesheets,
             update_timesheet,
             delete_timesheet,

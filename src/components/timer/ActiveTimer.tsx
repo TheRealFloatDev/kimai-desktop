@@ -16,7 +16,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useEffect } from "react";
 import { useActiveTimer, useLiveDuration, useStopTimer } from "@/hooks/useApi";
+import { useTimerAnchor } from "@/hooks/useTimerAnchor";
 import { formatDuration } from "@/lib/utils";
 import { TimerStartForm } from "./TimerStartForm";
 
@@ -24,7 +26,12 @@ export function ActiveTimer() {
   const { data: timer, isLoading } = useActiveTimer();
   const { data: duration = 0 } = useLiveDuration(timer);
   const stopTimer = useStopTimer();
+  const setStartedAtMs = useTimerAnchor((s) => s.setStartedAtMs);
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  useEffect(() => {
+    if (!timer) setStartedAtMs(null);
+  }, [timer, setStartedAtMs]);
 
   if (isLoading) {
     return (

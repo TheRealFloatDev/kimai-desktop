@@ -28,8 +28,8 @@ describe("TimesheetEditDialog", () => {
             id: 99,
             begin: "2026-05-20T08:00:00",
             end: "2026-05-20T09:00:00",
-            project: 1,
-            activity: 2,
+            project: { id: 1, name: "P1", customer: { id: 1, name: "C" } },
+            activity: { id: 2, name: "A1" },
             description: "Arbeit",
             billable: true,
           }}

@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use tauri::State;
 
 use crate::commands::auth::get_client;
-use crate::kimai::client::{TimesheetCollection, TimesheetCollectionExpanded, TimesheetEditForm};
+use crate::kimai::client::{TimesheetCollectionExpanded, TimesheetEditForm};
 use crate::state::AppState;
 
 #[tauri::command]
@@ -90,7 +90,7 @@ pub async fn get_recent(
 #[tauri::command]
 pub async fn get_today_timesheets(
     state: State<'_, AppState>,
-) -> Result<Vec<TimesheetCollection>, String> {
+) -> Result<Vec<TimesheetCollectionExpanded>, String> {
     let client = get_client(&state).await?;
     client.get_today_timesheets().await
 }

@@ -1,33 +1,73 @@
 import { createRoute } from "@tanstack/react-router";
+import { Clock, Timer } from "lucide-react";
 import { ActiveTimer } from "@/components/timer/ActiveTimer";
 import { RecentList } from "@/components/timer/RecentList";
-import { TimesheetList } from "@/components/timesheet/TimesheetList";
-import { useTodayTimesheets } from "@/hooks/useApi";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useWorkingStats } from "@/hooks/useApi";
+import { formatWorkingHours } from "@/lib/utils";
 import { Route as rootRoute } from "./__root";
 
+function StatCard({
+  label,
+  value,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  icon: typeof Clock;
+}) {
+  return (
+    <Card className="border-border/60 shadow-none">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground">
+          {label}
+        </CardTitle>
+        <Icon className="h-4 w-4 text-muted-foreground" />
+      </CardHeader>
+      <CardContent>
+        <p className="text-2xl font-semibold tracking-tight">{value}</p>
+      </CardContent>
+    </Card>
+  );
+}
+
 function DashboardPage() {
-  const { data: today = [], isLoading } = useTodayTimesheets();
+  const { data: stats, isLoading } = useWorkingStats();
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-semibold">Dashboard</h2>
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-semibold tracking-tight">Dashboard</h2>
+        <p className="text-sm text-muted-foreground">
+          Übersicht deiner erfassten Arbeitszeit
+        </p>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          label="Heute"
+          value={isLoading ? "…" : formatWorkingHours(stats?.today_seconds ?? 0)}
+          icon={Clock}
+        />
+        <StatCard
+          label="Diese Stunde"
+          value={isLoading ? "…" : formatWorkingHours(stats?.hour_seconds ?? 0)}
+          icon={Timer}
+        />
+        <StatCard
+          label="Dieser Monat"
+          value={isLoading ? "…" : formatWorkingHours(stats?.month_seconds ?? 0)}
+          icon={Clock}
+        />
+        <StatCard
+          label="Dieses Jahr"
+          value={isLoading ? "…" : formatWorkingHours(stats?.year_seconds ?? 0)}
+          icon={Clock}
+        />
+      </div>
+
       <ActiveTimer />
       <RecentList />
-      <section>
-        <h3 className="mb-3 text-lg font-medium">Heute</h3>
-        {isLoading && <p className="text-muted-foreground">Lädt…</p>}
-        {!isLoading && today.length === 0 && (
-          <p className="text-muted-foreground">Keine Einträge für heute</p>
-        )}
-        {today.length > 0 && (
-          <TimesheetList
-            timesheets={today}
-            onEdit={() => {}}
-            onDelete={() => {}}
-            showActions={false}
-          />
-        )}
-      </section>
     </div>
   );
 }

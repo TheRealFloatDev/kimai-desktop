@@ -1,7 +1,7 @@
 use tauri::State;
 
 use crate::commands::auth::get_client;
-use crate::kimai::client::{TimesheetCollection, TimesheetEditForm, TimesheetFilterParams};
+use crate::kimai::client::{TimesheetCollectionExpanded, TimesheetEditForm, TimesheetFilterParams};
 use crate::state::AppState;
 
 #[tauri::command]
@@ -17,7 +17,7 @@ pub async fn list_timesheets(
     order_by: Option<String>,
     order: Option<String>,
     term: Option<String>,
-) -> Result<Vec<TimesheetCollection>, String> {
+) -> Result<Vec<TimesheetCollectionExpanded>, String> {
     let client = get_client(&state).await?;
     let params = TimesheetFilterParams {
         page,

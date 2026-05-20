@@ -1,50 +1,98 @@
 import { createRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { TimesheetDataTable } from "@/components/timesheet/TimesheetDataTable";
 import { TimesheetEditDialog } from "@/components/timesheet/TimesheetEditDialog";
 import { TimesheetFilters } from "@/components/timesheet/TimesheetFilters";
-import { TimesheetList } from "@/components/timesheet/TimesheetList";
 import { useDeleteTimesheet, useTimesheets } from "@/hooks/useApi";
+import {
+  defaultHistoryRange,
+  rangeToKimaiFilters,
+} from "@/lib/date-utils";
 import type {
-  TimesheetCollection,
+  TimesheetCollectionExpanded,
   TimesheetFilterParams,
 } from "@/lib/types.generated";
+import type { DateRange } from "react-day-picker";
 import { Route as rootRoute } from "./__root";
 
-function HistoryPage() {
-  const [filters, setFilters] = useState<TimesheetFilterParams>({
+function buildInitialFilters(): TimesheetFilterParams {
+  const range = defaultHistoryRange();
+  const { begin, end } = rangeToKimaiFilters(range);
+  return {
     page: 1,
     size: 50,
     order: "DESC",
     orderBy: "begin",
-  });
-  const [appliedFilters, setAppliedFilters] = useState(filters);
-  const [editTarget, setEditTarget] = useState<TimesheetCollection | null>(null);
+    begin,
+    end,
+  };
+}
+
+function HistoryPage() {
+  const initial = useMemo(() => buildInitialFilters(), []);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(
+    defaultHistoryRange(),
+  );
+  const [filters, setFilters] = useState<TimesheetFilterParams>(initial);
+  const [appliedFilters, setAppliedFilters] = useState(initial);
+  const [editTarget, setEditTarget] =
+    useState<TimesheetCollectionExpanded | null>(null);
   const [editOpen, setEditOpen] = useState(false);
 
-  const { data: timesheets = [], isLoading } = useTimesheets(appliedFilters);
+  const {
+    data: timesheets = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useTimesheets(appliedFilters);
   const deleteTimesheet = useDeleteTimesheet();
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-semibold">History</h2>
-      <TimesheetFilters
-        filters={filters}
-        onChange={setFilters}
-        onSearch={() => setAppliedFilters({ ...filters, page: 1 })}
-      />
-      {isLoading && <p className="text-muted-foreground">Lädt…</p>}
-      {!isLoading && (
-        <TimesheetList
-          timesheets={timesheets}
-          onEdit={(ts) => {
-            setEditTarget(ts);
-            setEditOpen(true);
-          }}
-          onDelete={(id) => deleteTimesheet.mutate(id)}
+    <div className="flex h-full min-h-0 flex-col gap-4">
+      <h2 className="shrink-0 text-2xl font-semibold tracking-tight">History</h2>
+      <div className="shrink-0">
+        <TimesheetFilters
+          filters={filters}
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
+          onChange={setFilters}
+          onSearch={() => setAppliedFilters({ ...filters, page: 1 })}
         />
+      </div>
+      {isError && (
+        <Alert variant="destructive" className="shrink-0">
+          <AlertDescription>
+            {String(error)}
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-3"
+              onClick={() => refetch()}
+            >
+              Erneut laden
+            </Button>
+          </AlertDescription>
+        </Alert>
       )}
-      <div className="flex justify-between">
+      <div className="min-h-0 flex-1 overflow-auto">
+        {isLoading && (
+          <p className="text-muted-foreground">Lädt…</p>
+        )}
+        {!isLoading && !isError && (
+          <TimesheetDataTable
+            timesheets={timesheets}
+            onEdit={(ts) => {
+              setEditTarget(ts);
+              setEditOpen(true);
+            }}
+            onDelete={(id) => deleteTimesheet.mutate(id)}
+          />
+        )}
+      </div>
+      <div className="flex shrink-0 justify-between">
         <Button
           variant="outline"
           disabled={(appliedFilters.page ?? 1) <= 1}

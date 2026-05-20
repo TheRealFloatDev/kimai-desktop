@@ -4,7 +4,6 @@ import type {
   Credentials,
   CustomerCollection,
   ProjectCollection,
-  TimesheetCollection,
   TimesheetCollectionExpanded,
   TimesheetEditForm,
   TimesheetEntity,
@@ -68,10 +67,18 @@ export const kimaiApi = {
     invoke<TimesheetCollectionExpanded[]>("get_recent", { size }),
 
   getTodayTimesheets: () =>
-    invoke<TimesheetCollection[]>("get_today_timesheets"),
+    invoke<TimesheetCollectionExpanded[]>("get_today_timesheets"),
+
+  getWorkingStats: () =>
+    invoke<{
+      today_seconds: number;
+      hour_seconds: number;
+      month_seconds: number;
+      year_seconds: number;
+    }>("get_working_stats"),
 
   listTimesheets: (params: TimesheetFilterParams) =>
-    invoke<TimesheetCollection[]>("list_timesheets", {
+    invoke<TimesheetCollectionExpanded[]>("list_timesheets", {
       page: params.page,
       size: params.size,
       begin: params.begin,
