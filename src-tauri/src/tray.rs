@@ -365,6 +365,7 @@ fn handle_menu_click(app: &AppHandle, id: &str) {
         return;
     }
     if id == "quit" {
+        app.state::<AppState>().request_quit();
         app.exit(0);
         return;
     }

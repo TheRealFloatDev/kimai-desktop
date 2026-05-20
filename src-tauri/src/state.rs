@@ -1,3 +1,4 @@
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
 
 use crate::kimai::client::KimaiClient;
@@ -56,6 +57,8 @@ pub struct AppState {
     pub tray_menu_fingerprint: Mutex<u64>,
     pub timer_display_anchor: Mutex<TimerDisplayAnchor>,
     pub locale: Mutex<String>,
+    /// Gesetzt, wenn „Beenden“ im Tray (oder expliziter App-Exit) gewünscht ist.
+    pub quit_requested: AtomicBool,
 }
 
 impl Default for AppState {
@@ -66,6 +69,17 @@ impl Default for AppState {
             tray_menu_fingerprint: Mutex::new(0),
             timer_display_anchor: Mutex::new(TimerDisplayAnchor::default()),
             locale: Mutex::new("en".to_string()),
+            quit_requested: AtomicBool::new(false),
         }
+    }
+}
+
+impl AppState {
+    pub fn request_quit(&self) {
+        self.quit_requested.store(true, Ordering::SeqCst);
+    }
+
+    pub fn is_quit_requested(&self) -> bool {
+        self.quit_requested.load(Ordering::SeqCst)
     }
 }

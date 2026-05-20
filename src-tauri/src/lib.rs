@@ -116,8 +116,11 @@ pub fn run() {
         .run(|app_handle, event| {
             match event {
                 RunEvent::ExitRequested { api, .. } => {
-                    // Fenster schließen = nur verstecken; Beenden nur über Tray „Quit“.
-                    api.prevent_exit();
+                    // Fenster schließen / Cmd+Q: App im Hintergrund behalten.
+                    // Tray „Beenden“ setzt quit_requested und beendet wirklich.
+                    if !app_handle.state::<AppState>().is_quit_requested() {
+                        api.prevent_exit();
+                    }
                 }
                 RunEvent::Reopen { .. } => {
                     // macOS: Dock-Icon angeklickt → Fenster wieder anzeigen.
