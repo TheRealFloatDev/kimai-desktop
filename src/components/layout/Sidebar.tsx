@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Clock, Home, Settings } from "lucide-react";
+import { TimerStartButton } from "@/components/timer/TimerStartButton";
 import { useTranslation } from "@/i18n";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +27,10 @@ export function Sidebar() {
           </h1>
           <p className="text-xs text-muted-foreground">{t("app.desktop")}</p>
         </div>
+      </div>
+
+      <div className="px-3 pb-4">
+        <TimerStartButton />
       </div>
 
       <nav className="flex flex-1 flex-col gap-0.5 px-3">

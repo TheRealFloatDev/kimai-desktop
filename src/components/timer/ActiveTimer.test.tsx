@@ -25,7 +25,7 @@ function renderWithClient(ui: React.ReactElement) {
 }
 
 describe("ActiveTimer", () => {
-  it("zeigt Start-Formular wenn kein Timer aktiv", () => {
+  it("rendert nichts wenn kein Timer aktiv", () => {
     vi.mocked(useActiveTimer).mockReturnValue({
       data: null,
       isLoading: false,
@@ -34,8 +34,8 @@ describe("ActiveTimer", () => {
       data: 0,
     } as ReturnType<typeof useLiveDuration>);
 
-    renderWithClient(<ActiveTimer />);
-    expect(screen.getByRole("button", { name: /Start timer/i })).toBeInTheDocument();
+    const { container } = renderWithClient(<ActiveTimer />);
+    expect(container).toBeEmptyDOMElement();
   });
 
   it("zeigt laufenden Timer mit Dauer", () => {

@@ -37,15 +37,6 @@ function DashboardPage() {
     <div className="mx-auto max-w-5xl space-y-16">
       <ActiveTimer />
 
-      <header>
-        <h2 className="text-2xl font-semibold tracking-tight">
-          {t("dashboard.title")}
-        </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {t("dashboard.subtitle")}
-        </p>
-      </header>
-
       <section className="grid gap-10 sm:grid-cols-2 xl:grid-cols-4">
         <StatBlock
           label={t("dashboard.statsToday")}

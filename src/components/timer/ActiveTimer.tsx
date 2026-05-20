@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Play, Square } from "lucide-react";
+import { Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,45 +11,16 @@ import {
 import { useTranslation } from "@/i18n";
 import { useActiveTimer, useLiveDuration, useStopTimer } from "@/hooks/useApi";
 import { formatDuration } from "@/lib/utils";
-import { TimerStartForm } from "./TimerStartForm";
 
 export function ActiveTimer() {
   const { t } = useTranslation();
   const { data: timer, isLoading } = useActiveTimer();
   const { data: duration = 0 } = useLiveDuration(timer);
   const stopTimer = useStopTimer();
-  const [startOpen, setStartOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  if (isLoading) {
-    return (
-      <section className="border-b border-border/50 pb-8">
-        <p className="text-sm text-muted-foreground">{t("timer.loading")}</p>
-      </section>
-    );
-  }
-
-  if (!timer) {
-    return (
-      <>
-        <section className="border-b border-border/50 pb-8">
-          <Button size="lg" onClick={() => setStartOpen(true)}>
-            <Play className="mr-2 h-4 w-4" />
-            {t("timer.start")}
-          </Button>
-        </section>
-
-        <Dialog open={startOpen} onOpenChange={setStartOpen}>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle>{t("timer.startTitle")}</DialogTitle>
-              <DialogDescription>{t("timer.startDescription")}</DialogDescription>
-            </DialogHeader>
-            <TimerStartForm onSuccess={() => setStartOpen(false)} />
-          </DialogContent>
-        </Dialog>
-      </>
-    );
+  if (isLoading || !timer) {
+    return null;
   }
 
   const customerName =
