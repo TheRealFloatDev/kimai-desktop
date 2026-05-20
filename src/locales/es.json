@@ -53,7 +53,6 @@
     "description": "Descripción",
     "customerFallback": "Cliente #{{id}}",
     "recentTitle": "Usado recientemente",
-    "recentSubtitle": "Reinicio rápido",
     "recentLoading": "Cargando…",
     "recentEmpty": "Sin entradas",
     "formCustomer": "Cliente",

@@ -53,7 +53,6 @@
     "description": "Beschrijving",
     "customerFallback": "Klant #{{id}}",
     "recentTitle": "Recent gebruikt",
-    "recentSubtitle": "Snel opnieuw starten",
     "recentLoading": "Laden…",
     "recentEmpty": "Geen items",
     "formCustomer": "Klant",

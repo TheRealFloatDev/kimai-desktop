@@ -12,14 +12,9 @@ export function RecentList() {
 
   return (
     <section className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium tracking-tight">
-          {t("timer.recentTitle")}
-        </h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {t("timer.recentSubtitle")}
-        </p>
-      </div>
+      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        {t("timer.recentTitle")}
+      </p>
       {isLoading && (
         <p className="text-sm text-muted-foreground">{t("timer.recentLoading")}</p>
       )}
