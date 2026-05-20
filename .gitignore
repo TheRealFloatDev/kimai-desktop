@@ -1,0 +1,5 @@
+node_modules/
+.garmingo
+
+.DS_STORE
+dist/
