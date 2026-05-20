@@ -69,7 +69,7 @@ function HistoryPage() {
   };
 
   return (
-    <div className="mx-auto flex h-full min-h-0 w-full max-w-5xl flex-col gap-4">
+    <div className="mx-auto flex min-h-0 flex-1 w-full max-w-5xl flex-col gap-4 overflow-hidden">
       <header className="shrink-0">
         <h2 className="text-2xl font-semibold tracking-tight">
           {t("history.title")}

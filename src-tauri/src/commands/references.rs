@@ -34,7 +34,7 @@ pub async fn get_activities(
 pub async fn get_tags(
     state: State<'_, AppState>,
     name: Option<String>,
-) -> Result<Vec<String>, String> {
+) -> Result<Vec<TagEntity>, String> {
     let client = get_client(&state).await?;
     client.get_tags(name.as_deref()).await
 }

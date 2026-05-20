@@ -18,7 +18,7 @@ vi.mock("@/hooks/useApi", () => ({
     isPending: false,
     isError: false,
   })),
-  useTags: vi.fn(() => ({ data: [], isLoading: false })),
+  useTags: vi.fn(() => ({ data: [] as { id: number; name: string }[], isLoading: false })),
   useCreateTag: vi.fn(() => ({ mutateAsync: vi.fn(), isPending: false })),
 }));
 

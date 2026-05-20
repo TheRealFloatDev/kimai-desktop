@@ -84,7 +84,8 @@ function SettingsPage() {
   };
 
   return (
-    <div className="mx-auto max-w-xl space-y-16">
+    <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="mx-auto max-w-xl space-y-16 pb-4">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">
           {t("settings.title")}
@@ -174,6 +175,7 @@ function SettingsPage() {
           {t("app.version", { version: appVersion })}
         </p>
       </SettingsSection>
+      </div>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LOCALES, useTranslation, type Locale } from "@/i18n";
+import { LocaleFlag } from "@/lib/locale-flags";
 
 export function LanguageSelector() {
   const { t, locale, setLocale } = useTranslation();
@@ -16,12 +17,20 @@ export function LanguageSelector() {
       <Label>{t("language.label")}</Label>
       <Select value={locale} onValueChange={(v) => setLocale(v as Locale)}>
         <SelectTrigger className="w-full max-w-xs">
-          <SelectValue />
+          <SelectValue>
+            <span className="flex items-center gap-2">
+              <LocaleFlag locale={locale} />
+              {t(`language.${locale}`)}
+            </span>
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {LOCALES.map((code) => (
             <SelectItem key={code} value={code}>
-              {t(`language.${code}`)}
+              <span className="flex items-center gap-2">
+                <LocaleFlag locale={code} />
+                {t(`language.${code}`)}
+              </span>
             </SelectItem>
           ))}
         </SelectContent>

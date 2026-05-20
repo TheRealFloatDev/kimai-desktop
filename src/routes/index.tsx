@@ -34,7 +34,8 @@ function DashboardPage() {
   const { data: stats, isLoading } = useWorkingStats();
 
   return (
-    <div className="mx-auto min-h-0 max-w-5xl space-y-16 pb-4">
+    <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="mx-auto max-w-5xl space-y-16 pb-4">
       <ActiveTimer />
 
       <section className="grid gap-10 border-b border-border/50 pb-16 sm:grid-cols-2 xl:grid-cols-4">
@@ -61,6 +62,7 @@ function DashboardPage() {
       </section>
 
       <RecentList />
+      </div>
     </div>
   );
 }

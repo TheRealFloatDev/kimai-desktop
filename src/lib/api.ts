@@ -11,6 +11,13 @@ import type {
   UserEntity,
 } from "./types.generated";
 
+export interface TagEntity {
+  id: number;
+  name: string;
+  color?: string;
+  color_safe?: string;
+}
+
 export const kimaiApi = {
   setCredentials: (url: string, token: string) =>
     invoke<void>("set_credentials", { url, token }),
@@ -39,10 +46,10 @@ export const kimaiApi = {
     invoke<ActivityCollection[]>("get_activities", { projectId }),
 
   getTags: (name?: string) =>
-    invoke<string[]>("get_tags", { name: name || null }),
+    invoke<TagEntity[]>("get_tags", { name: name || null }),
 
   createTag: (name: string) =>
-    invoke<{ id: number; name: string }>("create_tag", { name }),
+    invoke<TagEntity>("create_tag", { name }),
 
   getActiveTimer: () =>
     invoke<TimesheetCollectionExpanded | null>("get_active_timer"),

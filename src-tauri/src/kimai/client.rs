@@ -36,6 +36,10 @@ pub struct ProjectCollection {
 pub struct TagEntity {
     pub id: i64,
     pub name: String,
+    #[serde(default)]
+    pub color: Option<String>,
+    #[serde(rename = "color-safe", default)]
+    pub color_safe: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -332,8 +336,8 @@ impl KimaiClient {
         self.get(&path).await
     }
 
-    pub async fn get_tags(&self, name: Option<&str>) -> Result<Vec<String>, String> {
-        let mut path = "/api/tags".to_string();
+    pub async fn get_tags(&self, name: Option<&str>) -> Result<Vec<TagEntity>, String> {
+        let mut path = "/api/tags/find".to_string();
         if let Some(term) = name.filter(|s| !s.trim().is_empty()) {
             let encoded = urlencoding::encode(term.trim());
             path.push_str(&format!("?name={encoded}"));

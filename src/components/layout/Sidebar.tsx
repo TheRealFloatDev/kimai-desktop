@@ -15,7 +15,7 @@ export function Sidebar() {
   ] as const;
 
   return (
-    <aside className="flex w-52 shrink-0 flex-col border-r border-border/50 bg-background">
+    <aside className="flex h-full w-52 shrink-0 flex-col overflow-hidden border-r border-border/50 bg-background">
       <div className="flex items-center gap-3 px-5 py-8">
         <img
           src="/logo-transparent.png"

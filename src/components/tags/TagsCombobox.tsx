@@ -8,8 +8,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { KimaiColorDot } from "@/components/timesheet/ColorDot";
 import { useTranslation } from "@/i18n";
 import { useCreateTag, useTags } from "@/hooks/useApi";
+import type { TagEntity } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 function normalizeTagName(name: string): string {
@@ -20,6 +22,12 @@ function isValidNewTag(name: string): boolean {
   const n = normalizeTagName(name);
   return n.length >= 2 && n.length <= 100;
 }
+
+function tagKey(name: string): string {
+  return name.toLowerCase();
+}
+
+type TagColorMeta = Pick<TagEntity, "color" | "color_safe">;
 
 interface TagsComboboxProps {
   value: string[];
@@ -38,6 +46,10 @@ export function TagsCombobox({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [colorByName, setColorByName] = useState<Record<string, TagColorMeta>>(
+    {},
+  );
 
   useEffect(() => {
     const id = window.setTimeout(() => setDebouncedQuery(query), 200);
@@ -50,42 +62,68 @@ export function TagsCombobox({
   );
   const createTag = useCreateTag();
 
+  useEffect(() => {
+    if (!suggestions.length) return;
+    setColorByName((prev) => {
+      const next = { ...prev };
+      for (const tag of suggestions) {
+        next[tagKey(tag.name)] = {
+          color: tag.color,
+          color_safe: tag.color_safe,
+        };
+      }
+      return next;
+    });
+  }, [suggestions]);
+
   const normalizedQuery = normalizeTagName(query);
   const canAddNew =
     isValidNewTag(query) &&
-    !value.some((t) => t.toLowerCase() === normalizedQuery.toLowerCase()) &&
-    !suggestions.some((t) => t.toLowerCase() === normalizedQuery.toLowerCase());
+    !value.some((t) => tagKey(t) === tagKey(normalizedQuery)) &&
+    !suggestions.some((t) => tagKey(t.name) === tagKey(normalizedQuery));
 
   const filteredSuggestions = useMemo(() => {
-    const selected = new Set(value.map((t) => t.toLowerCase()));
-    return suggestions.filter((t) => !selected.has(t.toLowerCase()));
+    const selected = new Set(value.map(tagKey));
+    return suggestions.filter((t) => !selected.has(tagKey(t.name)));
   }, [suggestions, value]);
 
-  const toggleTag = (tag: string) => {
-    const key = tag.toLowerCase();
-    if (value.some((t) => t.toLowerCase() === key)) {
-      onChange(value.filter((t) => t.toLowerCase() !== key));
-    } else {
-      onChange([...value, tag]);
+  const addTag = (name: string, meta?: TagColorMeta) => {
+    const key = tagKey(name);
+    if (value.some((t) => tagKey(t) === key)) return;
+    onChange([...value, name]);
+    if (meta) {
+      setColorByName((prev) => ({ ...prev, [key]: meta }));
     }
     setQuery("");
+    setCreateError(null);
   };
 
-  const removeTag = (tag: string) => {
-    const key = tag.toLowerCase();
-    onChange(value.filter((t) => t.toLowerCase() !== key));
+  const toggleTag = (tag: TagEntity) => {
+    const key = tagKey(tag.name);
+    if (value.some((t) => tagKey(t) === key)) {
+      onChange(value.filter((t) => tagKey(t) !== key));
+    } else {
+      addTag(tag.name, { color: tag.color, color_safe: tag.color_safe });
+    }
+  };
+
+  const removeTag = (name: string) => {
+    const key = tagKey(name);
+    onChange(value.filter((t) => tagKey(t) !== key));
   };
 
   const handleAddNew = async () => {
-    if (!canAddNew) return;
+    if (!canAddNew || createTag.isPending) return;
     const name = normalizedQuery;
+    setCreateError(null);
     try {
-      await createTag.mutateAsync(name);
-      onChange([...value, name]);
-      setQuery("");
-    } catch {
-      onChange([...value, name]);
-      setQuery("");
+      const created = await createTag.mutateAsync(name);
+      addTag(created.name, {
+        color: created.color,
+        color_safe: created.color_safe,
+      });
+    } catch (e) {
+      setCreateError(String(e));
     }
   };
 
@@ -103,12 +141,13 @@ export function TagsCombobox({
             <Badge
               key={tag}
               variant="secondary"
-              className="gap-0.5 pr-1 font-normal"
+              className="gap-1 pr-1 font-normal"
               onClick={(e) => {
                 e.stopPropagation();
                 removeTag(tag);
               }}
             >
+              <KimaiColorDot entity={colorByName[tagKey(tag)]} />
               {tag}
               <X className="h-3 w-3 opacity-60" />
             </Badge>
@@ -124,7 +163,10 @@ export function TagsCombobox({
         <div className="border-b p-2">
           <Input
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setCreateError(null);
+            }}
             placeholder={t("timer.formTagsSearch")}
             className="h-8"
             onKeyDown={(e) => {
@@ -136,6 +178,9 @@ export function TagsCombobox({
           />
         </div>
         <div className="max-h-48 overflow-y-auto p-1">
+          {createError && (
+            <p className="px-2 py-1.5 text-xs text-destructive">{createError}</p>
+          )}
           {isLoading && (
             <p className="px-2 py-1.5 text-xs text-muted-foreground">
               {t("timer.formTagsLoading")}
@@ -148,11 +193,11 @@ export function TagsCombobox({
           )}
           {filteredSuggestions.map((tag) => {
             const selected = value.some(
-              (t) => t.toLowerCase() === tag.toLowerCase(),
+              (t) => tagKey(t) === tagKey(tag.name),
             );
             return (
               <button
-                key={tag}
+                key={tag.id}
                 type="button"
                 className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
                 onClick={() => toggleTag(tag)}
@@ -163,7 +208,8 @@ export function TagsCombobox({
                     selected ? "opacity-100" : "opacity-0",
                   )}
                 />
-                <span className="truncate">{tag}</span>
+                <KimaiColorDot entity={tag} />
+                <span className="truncate">{tag.name}</span>
               </button>
             );
           })}
