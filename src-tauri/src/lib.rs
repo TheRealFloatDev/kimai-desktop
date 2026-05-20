@@ -2,13 +2,14 @@ mod commands;
 mod credentials;
 mod kimai;
 mod state;
+mod timer_display;
 mod tray;
 
 use commands::{
-    clear_stored_credentials, delete_timesheet, get_active_timer, get_active_timer_duration,
+    clear_stored_credentials, clear_timer_display_anchor, delete_timesheet, get_active_timer,
     get_activities, get_credentials, get_customers, get_me, get_projects, get_recent,
-    get_today_timesheets, get_working_stats, list_timesheets, restart_timer, set_credentials,
-    start_timer, stop_timer,
+    get_today_timesheets, get_timer_display_seconds, get_working_stats, list_timesheets,
+    reset_timer_display_anchor, restart_timer, set_credentials, start_timer, stop_timer,
     update_timesheet, validate_connection, validate_stored_connection,
 };
 use state::AppState;
@@ -41,7 +42,9 @@ pub fn run() {
             restart_timer,
             stop_timer,
             get_active_timer,
-            get_active_timer_duration,
+            get_timer_display_seconds,
+            reset_timer_display_anchor,
+            clear_timer_display_anchor,
             get_recent,
             get_today_timesheets,
             get_working_stats,

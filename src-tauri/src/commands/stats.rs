@@ -1,4 +1,4 @@
-use chrono::{Datelike, Local, TimeZone, Timelike};
+use chrono::{Datelike, Duration, Local, TimeZone};
 use serde::Serialize;
 use tauri::State;
 
@@ -8,7 +8,7 @@ use crate::state::AppState;
 #[derive(Debug, Clone, Serialize)]
 pub struct WorkingStats {
     pub today_seconds: i64,
-    pub hour_seconds: i64,
+    pub week_seconds: i64,
     pub month_seconds: i64,
     pub year_seconds: i64,
 }
@@ -23,6 +23,17 @@ fn year_begin() -> String {
     format!("{}-01-01T00:00:00", now.year())
 }
 
+fn week_begin() -> String {
+    let now = Local::now();
+    let days_from_monday = now.weekday().num_days_from_monday() as i64;
+    let monday = now.date_naive() - Duration::days(days_from_monday);
+    let start = Local
+        .from_local_datetime(&monday.and_hms_opt(0, 0, 0).unwrap())
+        .latest()
+        .unwrap();
+    start.format("%Y-%m-%dT%H:%M:%S").to_string()
+}
+
 fn sum_duration(entries: &[crate::kimai::client::TimesheetCollectionExpanded]) -> i64 {
     entries.iter().filter_map(|e| e.duration).sum()
 }
@@ -34,24 +45,15 @@ pub async fn get_working_stats(state: State<'_, AppState>) -> Result<WorkingStat
     let today = client.get_today_timesheets().await?;
     let today_seconds: i64 = today.iter().filter_map(|e| e.duration).sum();
 
-    let now = Local::now();
-    let hour_start = now.date_naive().and_hms_opt(now.hour(), 0, 0).unwrap();
-    let hour_start = Local
-        .from_local_datetime(&hour_start)
-        .latest()
-        .unwrap();
-    let hour_begin = hour_start.format("%Y-%m-%dT%H:%M:%S").to_string();
-
-    let hour_entries = client
+    let week_entries = client
         .list_timesheets(crate::kimai::client::TimesheetFilterParams {
-            begin: Some(hour_begin),
-            end: None,
+            begin: Some(week_begin()),
             size: Some(500),
             page: Some(1),
             ..Default::default()
         })
         .await?;
-    let hour_seconds = sum_duration(&hour_entries);
+    let week_seconds = sum_duration(&week_entries);
 
     let month_entries = client
         .list_timesheets(crate::kimai::client::TimesheetFilterParams {
@@ -75,7 +77,7 @@ pub async fn get_working_stats(state: State<'_, AppState>) -> Result<WorkingStat
 
     Ok(WorkingStats {
         today_seconds,
-        hour_seconds,
+        week_seconds,
         month_seconds,
         year_seconds,
     })

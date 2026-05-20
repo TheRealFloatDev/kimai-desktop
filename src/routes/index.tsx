@@ -1,5 +1,5 @@
 import { createRoute } from "@tanstack/react-router";
-import { Clock, Timer } from "lucide-react";
+import { CalendarDays, Clock, Timer } from "lucide-react";
 import { ActiveTimer } from "@/components/timer/ActiveTimer";
 import { RecentList } from "@/components/timer/RecentList";
 import { useWorkingStats } from "@/hooks/useApi";
@@ -32,7 +32,9 @@ function DashboardPage() {
   const { data: stats, isLoading } = useWorkingStats();
 
   return (
-    <div className="mx-auto max-w-4xl space-y-16">
+    <div className="mx-auto max-w-5xl space-y-16">
+      <ActiveTimer />
+
       <header>
         <h2 className="text-2xl font-semibold tracking-tight">Dashboard</h2>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -47,14 +49,14 @@ function DashboardPage() {
           icon={Clock}
         />
         <StatBlock
-          label="Diese Stunde"
-          value={isLoading ? "…" : formatWorkingHours(stats?.hour_seconds ?? 0)}
-          icon={Timer}
+          label="Diese Woche"
+          value={isLoading ? "…" : formatWorkingHours(stats?.week_seconds ?? 0)}
+          icon={CalendarDays}
         />
         <StatBlock
           label="Dieser Monat"
           value={isLoading ? "…" : formatWorkingHours(stats?.month_seconds ?? 0)}
-          icon={Clock}
+          icon={Timer}
         />
         <StatBlock
           label="Dieses Jahr"
@@ -63,7 +65,6 @@ function DashboardPage() {
         />
       </section>
 
-      <ActiveTimer />
       <RecentList />
     </div>
   );

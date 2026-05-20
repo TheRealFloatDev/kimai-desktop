@@ -44,9 +44,16 @@ impl TraySnapshot {
     }
 }
 
+#[derive(Clone, Default)]
+pub struct TimerDisplayAnchor {
+    pub timer_id: Option<i64>,
+    pub started_at_ms: i64,
+}
+
 #[derive(Default)]
 pub struct AppState {
     pub kimai_client: Mutex<Option<KimaiClient>>,
     pub tray_snapshot: Mutex<TraySnapshot>,
     pub tray_menu_fingerprint: Mutex<u64>,
+    pub timer_display_anchor: Mutex<TimerDisplayAnchor>,
 }

@@ -1,9 +1,11 @@
-use chrono::{DateTime, Utc};
 use tauri::State;
 
 use crate::commands::auth::get_client;
 use crate::kimai::client::{TimesheetCollectionExpanded, TimesheetEditForm};
 use crate::state::AppState;
+use crate::timer_display::{
+    clear_display_anchor, display_elapsed_secs, reset_display_anchor_now,
+};
 
 #[tauri::command]
 pub async fn start_timer(
@@ -14,9 +16,9 @@ pub async fn start_timer(
     tags: Option<String>,
     billable: Option<bool>,
 ) -> Result<crate::kimai::client::TimesheetEntity, String> {
+    reset_display_anchor_now(&state, None);
     let client = get_client(&state).await?;
 
-    // Kimai may error if another timer is already running — stop it first.
     if let Ok(active) = client.get_active_timesheet().await {
         if let Some(running) = active.into_iter().next() {
             client.stop_timer(running.id).await?;
@@ -33,7 +35,9 @@ pub async fn start_timer(
         billable,
         exported: None,
     };
-    client.start_timer(form).await
+    let entity = client.start_timer(form).await?;
+    reset_display_anchor_now(&state, Some(entity.id));
+    Ok(entity)
 }
 
 #[tauri::command]
@@ -41,8 +45,11 @@ pub async fn restart_timer(
     state: State<'_, AppState>,
     id: i64,
 ) -> Result<crate::kimai::client::TimesheetEntity, String> {
+    reset_display_anchor_now(&state, None);
     let client = get_client(&state).await?;
-    client.restart_timesheet(id).await
+    let entity = client.restart_timesheet(id).await?;
+    reset_display_anchor_now(&state, Some(entity.id));
+    Ok(entity)
 }
 
 #[tauri::command]
@@ -51,7 +58,9 @@ pub async fn stop_timer(
     id: i64,
 ) -> Result<crate::kimai::client::TimesheetEntity, String> {
     let client = get_client(&state).await?;
-    client.stop_timer(id).await
+    let entity = client.stop_timer(id).await?;
+    clear_display_anchor(&state);
+    Ok(entity)
 }
 
 #[tauri::command]
@@ -64,18 +73,33 @@ pub async fn get_active_timer(
 }
 
 #[tauri::command]
-pub async fn get_active_timer_duration(state: State<'_, AppState>) -> Result<Option<i64>, String> {
+pub async fn get_timer_display_seconds(state: State<'_, AppState>) -> Result<Option<i64>, String> {
     let client = get_client(&state).await?;
     let active = client.get_active_timesheet().await?;
     let Some(timer) = active.into_iter().next() else {
+        clear_display_anchor(&state);
         return Ok(None);
     };
-    let begin: DateTime<Utc> = timer
-        .begin
-        .parse()
-        .map_err(|e| format!("Ungültiges Datum: {}", e))?;
-    let secs = (Utc::now() - begin).num_seconds();
-    Ok(Some(secs.max(0)))
+    Ok(Some(display_elapsed_secs(
+        &state,
+        timer.id,
+        &timer.begin,
+    )))
+}
+
+#[tauri::command]
+pub async fn reset_timer_display_anchor(
+    state: State<'_, AppState>,
+    timer_id: Option<i64>,
+) -> Result<(), String> {
+    reset_display_anchor_now(&state, timer_id);
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn clear_timer_display_anchor(state: State<'_, AppState>) -> Result<(), String> {
+    clear_display_anchor(&state);
+    Ok(())
 }
 
 #[tauri::command]

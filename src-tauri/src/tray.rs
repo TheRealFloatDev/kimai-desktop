@@ -1,7 +1,6 @@
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
-use chrono::{Local, TimeZone, Utc};
 use tauri::{
     menu::{Menu, MenuItem, PredefinedMenuItem, Submenu},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
@@ -12,46 +11,9 @@ use crate::commands::auth::get_client;
 use crate::credentials::load_credentials;
 use crate::kimai::client::{KimaiClient, TimesheetEditForm};
 use crate::state::{AppState, TrayRecentEntry, TraySnapshot, TrayStartEntry};
+use crate::timer_display::{clear_display_anchor, display_elapsed_secs, format_display_duration, reset_display_anchor_now};
 
 pub const TRAY_ID: &str = "main";
-
-/// Tray title: MM:SS below 1h, HH:MM from 1h up.
-pub fn format_tray_duration(seconds: i64) -> String {
-    if seconds < 3600 {
-        let m = seconds / 60;
-        let s = seconds % 60;
-        format!("{:02}:{:02}", m, s)
-    } else {
-        let h = seconds / 3600;
-        let m = (seconds % 3600) / 60;
-        format!("{:02}:{:02}", h, m)
-    }
-}
-
-pub fn parse_begin_elapsed(begin: &str) -> Option<i64> {
-    let trimmed = begin.trim();
-    if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(trimmed) {
-        return Some((Utc::now() - dt.with_timezone(&Utc)).num_seconds().max(0));
-    }
-    if let Ok(dt) = chrono::DateTime::parse_from_str(trimmed, "%Y-%m-%dT%H:%M:%S%#z") {
-        return Some((Utc::now() - dt.with_timezone(&Utc)).num_seconds().max(0));
-    }
-    if let Ok(naive) = chrono::NaiveDateTime::parse_from_str(trimmed, "%Y-%m-%dT%H:%M:%S") {
-        if let Some(local) = Local.from_local_datetime(&naive).latest() {
-            return Some((Utc::now() - local.with_timezone(&Utc)).num_seconds().max(0));
-        }
-    }
-    // Kimai sometimes returns without colon in offset: +0200
-    if trimmed.len() >= 19 {
-        let naive_part = &trimmed[..19];
-        if let Ok(naive) = chrono::NaiveDateTime::parse_from_str(naive_part, "%Y-%m-%dT%H:%M:%S") {
-            if let Some(local) = Local.from_local_datetime(&naive).latest() {
-                return Some((Utc::now() - local.with_timezone(&Utc)).num_seconds().max(0));
-            }
-        }
-    }
-    None
-}
 
 fn refresh_tray_menu_if_needed(app: &AppHandle, snapshot: &TraySnapshot) {
     let fp = snapshot.menu_fingerprint();
@@ -294,10 +256,15 @@ async fn refresh_tray_snapshot(app: &AppHandle) -> TraySnapshot {
     if let Ok(active) = client.get_active_timesheet().await {
         if let Some(timer) = active.into_iter().next() {
             snapshot.active_timer_id = Some(timer.id);
-            snapshot.duration_secs = parse_begin_elapsed(&timer.begin);
+            snapshot.duration_secs = Some(display_elapsed_secs(
+                &app.state::<AppState>(),
+                timer.id,
+                &timer.begin,
+            ));
         } else {
             snapshot.active_timer_id = None;
             snapshot.duration_secs = None;
+            clear_display_anchor(&app.state::<AppState>());
         }
     }
 
@@ -424,7 +391,8 @@ async fn start_from_tray(app: &AppHandle, project_id: i64, activity_id: i64) -> 
         billable: None,
         exported: None,
     };
-    client.start_timer(form).await?;
+    let entity = client.start_timer(form).await?;
+    reset_display_anchor_now(&app.state::<AppState>(), Some(entity.id));
     let snapshot = refresh_tray_snapshot(app).await;
     *app.state::<AppState>().tray_menu_fingerprint.lock().unwrap() = 0;
     update_tray_icon(app, snapshot.duration_secs);
@@ -435,7 +403,8 @@ async fn start_from_tray(app: &AppHandle, project_id: i64, activity_id: i64) -> 
 async fn restart_from_tray(app: &AppHandle, timesheet_id: i64) -> Result<(), String> {
     let state = app.state::<AppState>();
     let client = get_client(&state).await?;
-    client.restart_timesheet(timesheet_id).await?;
+    let entity = client.restart_timesheet(timesheet_id).await?;
+    reset_display_anchor_now(&app.state::<AppState>(), Some(entity.id));
     let snapshot = refresh_tray_snapshot(app).await;
     *app.state::<AppState>().tray_menu_fingerprint.lock().unwrap() = 0;
     update_tray_icon(app, snapshot.duration_secs);
@@ -447,6 +416,7 @@ async fn stop_timer_by_id(app: &AppHandle, id: i64) -> Result<(), String> {
     let state = app.state::<AppState>();
     let client = get_client(&state).await?;
     client.stop_timer(id).await?;
+    clear_display_anchor(&app.state::<AppState>());
     let snapshot = refresh_tray_snapshot(app).await;
     *app.state::<AppState>().tray_menu_fingerprint.lock().unwrap() = 0;
     update_tray_icon(app, snapshot.duration_secs);
@@ -479,7 +449,7 @@ pub fn update_tray_from_snapshot(app: &AppHandle) {
 
 pub fn update_tray_icon(app: &AppHandle, duration_secs: Option<i64>) {
     let tooltip = match duration_secs {
-        Some(s) => format!("{} – Timer läuft", format_tray_duration(s)),
+        Some(s) => format!("{} – Timer läuft", format_display_duration(s)),
         None => "Kimai Desktop – Idle".to_string(),
     };
 
@@ -489,7 +459,7 @@ pub fn update_tray_icon(app: &AppHandle, duration_secs: Option<i64>) {
         #[cfg(target_os = "macos")]
         {
             if let Some(secs) = duration_secs {
-                let title = format_tray_duration(secs);
+                let title = format_display_duration(secs);
                 let _ = tray.set_title(Some(title.as_str()));
             } else {
                 // Leerer Titel entfernt die Zeitanzeige neben dem Icon (nur Icon sichtbar).
@@ -534,7 +504,7 @@ pub fn start_tray_update_loop(app: AppHandle) {
             let sleep_secs = {
                 let state = app.state::<AppState>();
                 let snap = state.tray_snapshot.lock().unwrap();
-                if snap.duration_secs.map(|s| s < 3600).unwrap_or(false) {
+                if snap.duration_secs.is_some() {
                     1
                 } else {
                     2

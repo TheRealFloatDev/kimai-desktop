@@ -1,7 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { kimaiApi } from "@/lib/api";
-import { activeDurationSeconds } from "@/lib/utils";
-import { useTimerAnchor } from "@/hooks/useTimerAnchor";
 import type {
   TimesheetCollectionExpanded,
   TimesheetEditForm,
@@ -60,7 +58,7 @@ export const useTodayTimesheets = () =>
 
 export interface WorkingStats {
   today_seconds: number;
-  hour_seconds: number;
+  week_seconds: number;
   month_seconds: number;
   year_seconds: number;
 }
@@ -86,7 +84,6 @@ export const useWorkingStats = () =>
 
 export const useStartTimer = () => {
   const queryClient = useQueryClient();
-  const setStartedAtMs = useTimerAnchor((s) => s.setStartedAtMs);
   return useMutation({
     mutationFn: (params: {
       projectId: number;
@@ -96,48 +93,48 @@ export const useStartTimer = () => {
       billable?: boolean;
     }) => kimaiApi.startTimer(params),
     onMutate: () => {
-      setStartedAtMs(Date.now());
+      void kimaiApi.resetTimerDisplayAnchor();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.activeTimer });
       queryClient.invalidateQueries({ queryKey: queryKeys.todayTimesheets });
       queryClient.invalidateQueries({ queryKey: queryKeys.recent() });
+      queryClient.invalidateQueries({ queryKey: ["liveDuration"] });
     },
     onError: () => {
-      setStartedAtMs(null);
+      void kimaiApi.clearTimerDisplayAnchor();
     },
   });
 };
 
 export const useRestartTimer = () => {
   const queryClient = useQueryClient();
-  const setStartedAtMs = useTimerAnchor((s) => s.setStartedAtMs);
   return useMutation({
     mutationFn: (id: number) => kimaiApi.restartTimer(id),
     onMutate: () => {
-      setStartedAtMs(Date.now());
+      void kimaiApi.resetTimerDisplayAnchor();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.activeTimer });
       queryClient.invalidateQueries({ queryKey: queryKeys.todayTimesheets });
       queryClient.invalidateQueries({ queryKey: queryKeys.recent() });
+      queryClient.invalidateQueries({ queryKey: ["liveDuration"] });
     },
     onError: () => {
-      setStartedAtMs(null);
+      void kimaiApi.clearTimerDisplayAnchor();
     },
   });
 };
 
 export const useStopTimer = () => {
   const queryClient = useQueryClient();
-  const setStartedAtMs = useTimerAnchor((s) => s.setStartedAtMs);
   return useMutation({
     mutationFn: (id: number) => kimaiApi.stopTimer(id),
     onSuccess: () => {
-      setStartedAtMs(null);
       queryClient.invalidateQueries({ queryKey: queryKeys.activeTimer });
       queryClient.invalidateQueries({ queryKey: queryKeys.todayTimesheets });
       queryClient.invalidateQueries({ queryKey: queryKeys.recent() });
+      queryClient.invalidateQueries({ queryKey: ["liveDuration"] });
     },
   });
 };
@@ -166,15 +163,12 @@ export const useDeleteTimesheet = () => {
 };
 
 export function useLiveDuration(timer: TimesheetCollectionExpanded | null | undefined) {
-  const startedAtMs = useTimerAnchor((s) => s.startedAtMs);
   return useQuery({
-    queryKey: ["liveDuration", timer?.id, timer?.begin, startedAtMs],
-    queryFn: () => {
+    queryKey: ["liveDuration", timer?.id],
+    queryFn: async () => {
       if (!timer) return 0;
-      if (startedAtMs != null) {
-        return Math.max(0, Math.floor((Date.now() - startedAtMs) / 1000));
-      }
-      return activeDurationSeconds(timer.begin);
+      const secs = await kimaiApi.getTimerDisplaySeconds();
+      return secs ?? 0;
     },
     enabled: !!timer,
     refetchInterval: 1000,

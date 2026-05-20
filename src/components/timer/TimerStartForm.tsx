@@ -20,10 +20,14 @@ import {
   useStartTimer,
 } from "@/hooks/useApi";
 
-export function TimerStartForm() {
-  const [customerId, setCustomerId] = useState<string>("");
-  const [projectId, setProjectId] = useState<string>("");
-  const [activityId, setActivityId] = useState<string>("");
+interface TimerStartFormProps {
+  onSuccess?: () => void;
+}
+
+export function TimerStartForm({ onSuccess }: TimerStartFormProps) {
+  const [customerId, setCustomerId] = useState("");
+  const [projectId, setProjectId] = useState("");
+  const [activityId, setActivityId] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [billable, setBillable] = useState(true);
@@ -39,13 +43,16 @@ export function TimerStartForm() {
 
   const handleStart = () => {
     if (!projectId || !activityId) return;
-    startTimer.mutate({
-      projectId: Number(projectId),
-      activityId: Number(activityId),
-      description: description || undefined,
-      tags: tags || undefined,
-      billable,
-    });
+    startTimer.mutate(
+      {
+        projectId: Number(projectId),
+        activityId: Number(activityId),
+        description: description || undefined,
+        tags: tags || undefined,
+        billable,
+      },
+      { onSuccess },
+    );
   };
 
   return (

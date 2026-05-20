@@ -41,8 +41,14 @@ export const kimaiApi = {
   getActiveTimer: () =>
     invoke<TimesheetCollectionExpanded | null>("get_active_timer"),
 
-  getActiveTimerDuration: () =>
-    invoke<number | null>("get_active_timer_duration"),
+  getTimerDisplaySeconds: () =>
+    invoke<number | null>("get_timer_display_seconds"),
+
+  resetTimerDisplayAnchor: (timerId?: number) =>
+    invoke<void>("reset_timer_display_anchor", { timerId }),
+
+  clearTimerDisplayAnchor: () =>
+    invoke<void>("clear_timer_display_anchor"),
 
   startTimer: (params: {
     projectId: number;
@@ -72,7 +78,7 @@ export const kimaiApi = {
   getWorkingStats: () =>
     invoke<{
       today_seconds: number;
-      hour_seconds: number;
+      week_seconds: number;
       month_seconds: number;
       year_seconds: number;
     }>("get_working_stats"),
