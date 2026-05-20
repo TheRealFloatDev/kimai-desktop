@@ -2623,7 +2623,7 @@ dependencies = [
 
 [[package]]
 name = "kimai-desktop"
-version = "0.1.1"
+version = "1.0.0"
 dependencies = [
  "chrono",
  "reqwest 0.12.28",
