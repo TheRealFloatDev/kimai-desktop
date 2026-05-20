@@ -11,6 +11,7 @@ use crate::commands::auth::get_client;
 use crate::credentials::load_credentials;
 use crate::kimai::client::{KimaiClient, TimesheetEditForm};
 use crate::i18n;
+use crate::macos_dock::set_dock_visible;
 use crate::state::{AppState, TrayRecentEntry, TraySnapshot, TrayStartEntry};
 use crate::timer_display::{clear_display_anchor, display_elapsed_secs, format_display_duration, reset_display_anchor_now};
 
@@ -456,14 +457,22 @@ async fn stop_timer_by_id(app: &AppHandle, id: i64) -> Result<(), String> {
 fn toggle_window(app: &AppHandle) {
     if let Some(window) = app.get_webview_window("main") {
         if window.is_visible().unwrap_or(false) {
-            let _ = window.hide();
+            hide_main_window(app);
         } else {
             show_window(app);
         }
     }
 }
 
-fn show_window(app: &AppHandle) {
+pub fn hide_main_window(app: &AppHandle) {
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.hide();
+    }
+    set_dock_visible(app, false);
+}
+
+pub fn show_window(app: &AppHandle) {
+    set_dock_visible(app, true);
     if let Some(window) = app.get_webview_window("main") {
         let _ = window.show();
         let _ = window.set_focus();

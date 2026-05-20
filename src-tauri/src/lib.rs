@@ -2,6 +2,7 @@ mod commands;
 mod credentials;
 mod i18n;
 mod kimai;
+mod macos_dock;
 mod preferences;
 mod state;
 mod timer_display;
@@ -17,12 +18,21 @@ use commands::{
 };
 use preferences::load_preferences;
 use state::AppState;
-use tauri::Manager;
-use tray::{setup_tray, start_tray_update_loop};
+use tauri::{Manager, RunEvent, WindowEvent};
+use tray::{hide_main_window, setup_tray, show_window, start_tray_update_loop};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let mut builder = tauri::Builder::default();
+
+    #[cfg(desktop)]
+    {
+        builder = builder.plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            show_window(app);
+        }));
+    }
+
+    builder
         .plugin(tauri_plugin_opener::init())
         .plugin(
             tauri_plugin_stronghold::Builder::new(|password| {
@@ -66,6 +76,15 @@ pub fn run() {
             set_app_locale,
             set_autostart_enabled,
         ])
+        .on_window_event(|window, event| {
+            if window.label() != "main" {
+                return;
+            }
+            if let WindowEvent::CloseRequested { api, .. } = event {
+                api.prevent_close();
+                hide_main_window(window.app_handle());
+            }
+        })
         .setup(|app| {
             if let Ok(prefs) = load_preferences(&app.handle()) {
                 *app.state::<AppState>().locale.lock().unwrap() = prefs.locale.clone();
@@ -87,6 +106,19 @@ pub fn run() {
             start_tray_update_loop(app.handle().clone());
             Ok(())
         })
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|app_handle, event| {
+            match event {
+                RunEvent::ExitRequested { api, .. } => {
+                    // Fenster schließen = nur verstecken; Beenden nur über Tray „Quit“.
+                    api.prevent_exit();
+                }
+                RunEvent::Reopen { .. } => {
+                    // macOS: Dock-Icon angeklickt → Fenster wieder anzeigen.
+                    show_window(app_handle);
+                }
+                _ => {}
+            }
+        });
 }
