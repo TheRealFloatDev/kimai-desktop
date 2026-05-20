@@ -1,17 +1,21 @@
 mod commands;
 mod credentials;
+mod i18n;
 mod kimai;
+mod preferences;
 mod state;
 mod timer_display;
 mod tray;
 
 use commands::{
     clear_stored_credentials, clear_timer_display_anchor, delete_timesheet, get_active_timer,
-    get_activities, get_credentials, get_customers, get_me, get_projects, get_recent,
-    get_today_timesheets, get_timer_display_seconds, get_working_stats, list_timesheets,
-    reset_timer_display_anchor, restart_timer, set_credentials, start_timer, stop_timer,
-    update_timesheet, validate_connection, validate_stored_connection,
+    get_activities, get_app_preferences, get_credentials, get_customers, get_me, get_projects,
+    get_recent, get_today_timesheets, get_timer_display_seconds, get_working_stats,
+    list_timesheets, reset_timer_display_anchor, restart_timer, set_app_locale,
+    set_autostart_enabled, set_credentials, start_timer, stop_timer, update_timesheet,
+    validate_connection, validate_stored_connection,
 };
+use preferences::load_preferences;
 use state::AppState;
 use tauri::Manager;
 use tray::{setup_tray, start_tray_update_loop};
@@ -30,6 +34,10 @@ pub fn run() {
             })
             .build(),
         )
+        .plugin(tauri_plugin_autostart::init(
+            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+            None,
+        ))
         .manage(AppState::default())
         .invoke_handler(tauri::generate_handler![
             set_credentials,
@@ -54,8 +62,21 @@ pub fn run() {
             get_customers,
             get_projects,
             get_activities,
+            get_app_preferences,
+            set_app_locale,
+            set_autostart_enabled,
         ])
         .setup(|app| {
+            if let Ok(prefs) = load_preferences(&app.handle()) {
+                *app.state::<AppState>().locale.lock().unwrap() = prefs.locale.clone();
+                use tauri_plugin_autostart::ManagerExt;
+                let autostart = app.handle().autolaunch();
+                if prefs.autostart {
+                    let _ = autostart.enable();
+                } else {
+                    let _ = autostart.disable();
+                }
+            }
             if let Ok(Some(creds)) = credentials::load_credentials(&app.handle()) {
                 if let Ok(client) = kimai::KimaiClient::new(creds.url, creds.token) {
                     let state = app.state::<AppState>();

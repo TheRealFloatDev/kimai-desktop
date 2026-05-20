@@ -10,6 +10,7 @@ use tauri::{
 use crate::commands::auth::get_client;
 use crate::credentials::load_credentials;
 use crate::kimai::client::{KimaiClient, TimesheetEditForm};
+use crate::i18n;
 use crate::state::{AppState, TrayRecentEntry, TraySnapshot, TrayStartEntry};
 use crate::timer_display::{clear_display_anchor, display_elapsed_secs, format_display_duration, reset_display_anchor_now};
 
@@ -32,12 +33,20 @@ fn refresh_tray_menu_if_needed(app: &AppHandle, snapshot: &TraySnapshot) {
     }
 }
 
-pub fn setup_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
-    let mut builder = TrayIconBuilder::with_id(TRAY_ID).tooltip("Kimai Desktop");
+fn tray_icon() -> tauri::image::Image<'static> {
+    tauri::image::Image::from_bytes(include_bytes!("../icons/tray-icon.png"))
+        .expect("tray icon png")
+}
 
-    if let Some(icon) = app.default_window_icon().cloned() {
-        builder = builder.icon(icon);
-    }
+fn current_locale(app: &AppHandle) -> String {
+    app.state::<AppState>().locale.lock().unwrap().clone()
+}
+
+pub fn setup_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
+    let locale = current_locale(app);
+    let mut builder = TrayIconBuilder::with_id(TRAY_ID)
+        .tooltip(&i18n::t(&locale, "tray.tooltipIdle"))
+        .icon(tray_icon());
 
     let menu = build_tray_menu(app, &TraySnapshot::default())?;
     builder = builder.menu(&menu);
@@ -73,8 +82,21 @@ fn build_tray_menu(
     app: &AppHandle,
     snapshot: &TraySnapshot,
 ) -> Result<Menu<tauri::Wry>, Box<dyn std::error::Error>> {
-    let show = MenuItem::with_id(app, "show", "Kimai anzeigen", true, None::<&str>)?;
-    let quit = MenuItem::with_id(app, "quit", "Beenden", true, None::<&str>)?;
+    let locale = current_locale(app);
+    let show = MenuItem::with_id(
+        app,
+        "show",
+        &i18n::t(&locale, "tray.show"),
+        true,
+        None::<&str>,
+    )?;
+    let quit = MenuItem::with_id(
+        app,
+        "quit",
+        &i18n::t(&locale, "tray.quit"),
+        true,
+        None::<&str>,
+    )?;
     let sep1 = PredefinedMenuItem::separator(app)?;
     let sep2 = PredefinedMenuItem::separator(app)?;
     let sep3 = PredefinedMenuItem::separator(app)?;
@@ -92,7 +114,7 @@ fn build_tray_menu(
         owned_items.push(MenuItem::with_id(
             app,
             format!("stop-{}", active_id),
-            "Timer stoppen",
+            &i18n::t(&locale, "tray.stop"),
             true,
             None::<&str>,
         )?);
@@ -149,10 +171,11 @@ fn build_start_section(
         return Ok(None);
     }
 
+    let locale = current_locale(app);
     owned_items.push(MenuItem::with_id(
         app,
         "open-start",
-        "Im Fenster wählen…",
+        &i18n::t(&locale, "tray.openPicker"),
         true,
         None::<&str>,
     )?);
@@ -230,7 +253,13 @@ fn build_start_section(
             .iter()
             .map(|s| s as &dyn tauri::menu::IsMenuItem<tauri::Wry>)
             .collect();
-        let root = Submenu::with_id_and_items(app, "new-timer", "Neu starten", true, &refs)?;
+        let root = Submenu::with_id_and_items(
+            app,
+            "new-timer",
+            &i18n::t(&locale, "tray.newTimer"),
+            true,
+            &refs,
+        )?;
         owned_submenus.extend(customer_subs);
         owned_submenus.push(root);
     }
@@ -448,9 +477,14 @@ pub fn update_tray_from_snapshot(app: &AppHandle) {
 }
 
 pub fn update_tray_icon(app: &AppHandle, duration_secs: Option<i64>) {
+    let locale = current_locale(app);
     let tooltip = match duration_secs {
-        Some(s) => format!("{} – Timer läuft", format_display_duration(s)),
-        None => "Kimai Desktop – Idle".to_string(),
+        Some(s) => i18n::t_fmt(
+            &locale,
+            "tray.tooltipRunning",
+            &format_display_duration(s),
+        ),
+        None => i18n::t(&locale, "tray.tooltipIdle"),
     };
 
     if let Some(tray) = app.tray_by_id(TRAY_ID) {

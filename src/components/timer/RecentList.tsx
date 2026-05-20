@@ -1,23 +1,29 @@
 import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/i18n";
 import { useRecent, useRestartTimer } from "@/hooks/useApi";
 import { formatDuration } from "@/lib/utils";
 
 export function RecentList() {
-  const { data: recent = [], isLoading } = useRecent(10);
+  const { t } = useTranslation();
+  const { data: recent = [], isLoading } = useRecent(5);
   const restartTimer = useRestartTimer();
 
   return (
     <section className="space-y-6">
       <div>
         <h3 className="text-lg font-medium tracking-tight">
-          Zuletzt verwendet
+          {t("timer.recentTitle")}
         </h3>
-        <p className="mt-1 text-sm text-muted-foreground">Schnell neu starten</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {t("timer.recentSubtitle")}
+        </p>
       </div>
-      {isLoading && <p className="text-sm text-muted-foreground">Lädt…</p>}
+      {isLoading && (
+        <p className="text-sm text-muted-foreground">{t("timer.recentLoading")}</p>
+      )}
       {!isLoading && recent.length === 0 && (
-        <p className="text-sm text-muted-foreground">Keine Einträge</p>
+        <p className="text-sm text-muted-foreground">{t("timer.recentEmpty")}</p>
       )}
       <ul className="divide-y divide-border/60">
         {recent.map((entry) => (
@@ -34,6 +40,7 @@ export function RecentList() {
                 {entry.activity.name}
                 {entry.duration != null &&
                   ` · ${formatDuration(entry.duration)}`}
+                {entry.description && ` · ${entry.description}`}
               </p>
             </div>
             <Button

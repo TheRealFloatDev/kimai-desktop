@@ -2,6 +2,7 @@ import { createRoute } from "@tanstack/react-router";
 import { CalendarDays, Clock, Timer } from "lucide-react";
 import { ActiveTimer } from "@/components/timer/ActiveTimer";
 import { RecentList } from "@/components/timer/RecentList";
+import { useTranslation } from "@/i18n";
 import { useWorkingStats } from "@/hooks/useApi";
 import { formatWorkingHours } from "@/lib/utils";
 import { Route as rootRoute } from "./__root";
@@ -29,6 +30,7 @@ function StatBlock({
 }
 
 function DashboardPage() {
+  const { t } = useTranslation();
   const { data: stats, isLoading } = useWorkingStats();
 
   return (
@@ -36,30 +38,32 @@ function DashboardPage() {
       <ActiveTimer />
 
       <header>
-        <h2 className="text-2xl font-semibold tracking-tight">Dashboard</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">
+          {t("dashboard.title")}
+        </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Übersicht deiner erfassten Arbeitszeit
+          {t("dashboard.subtitle")}
         </p>
       </header>
 
       <section className="grid gap-10 sm:grid-cols-2 xl:grid-cols-4">
         <StatBlock
-          label="Heute"
+          label={t("dashboard.statsToday")}
           value={isLoading ? "…" : formatWorkingHours(stats?.today_seconds ?? 0)}
           icon={Clock}
         />
         <StatBlock
-          label="Diese Woche"
+          label={t("dashboard.statsWeek")}
           value={isLoading ? "…" : formatWorkingHours(stats?.week_seconds ?? 0)}
           icon={CalendarDays}
         />
         <StatBlock
-          label="Dieser Monat"
+          label={t("dashboard.statsMonth")}
           value={isLoading ? "…" : formatWorkingHours(stats?.month_seconds ?? 0)}
           icon={Timer}
         />
         <StatBlock
-          label="Dieses Jahr"
+          label={t("dashboard.statsYear")}
           value={isLoading ? "…" : formatWorkingHours(stats?.year_seconds ?? 0)}
           icon={Clock}
         />

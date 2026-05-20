@@ -8,11 +8,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useTranslation } from "@/i18n";
 import { useActiveTimer, useLiveDuration, useStopTimer } from "@/hooks/useApi";
 import { formatDuration } from "@/lib/utils";
 import { TimerStartForm } from "./TimerStartForm";
 
 export function ActiveTimer() {
+  const { t } = useTranslation();
   const { data: timer, isLoading } = useActiveTimer();
   const { data: duration = 0 } = useLiveDuration(timer);
   const stopTimer = useStopTimer();
@@ -22,7 +24,7 @@ export function ActiveTimer() {
   if (isLoading) {
     return (
       <section className="border-b border-border/50 pb-8">
-        <p className="text-sm text-muted-foreground">Timer lädt…</p>
+        <p className="text-sm text-muted-foreground">{t("timer.loading")}</p>
       </section>
     );
   }
@@ -33,17 +35,15 @@ export function ActiveTimer() {
         <section className="border-b border-border/50 pb-8">
           <Button size="lg" onClick={() => setStartOpen(true)}>
             <Play className="mr-2 h-4 w-4" />
-            Timer starten
+            {t("timer.start")}
           </Button>
         </section>
 
         <Dialog open={startOpen} onOpenChange={setStartOpen}>
           <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>Timer starten</DialogTitle>
-              <DialogDescription>
-                Kunde, Projekt und Aktivität wählen
-              </DialogDescription>
+              <DialogTitle>{t("timer.startTitle")}</DialogTitle>
+              <DialogDescription>{t("timer.startDescription")}</DialogDescription>
             </DialogHeader>
             <TimerStartForm onSuccess={() => setStartOpen(false)} />
           </DialogContent>
@@ -54,14 +54,14 @@ export function ActiveTimer() {
 
   const customerName =
     timer.project.customer?.name ??
-    `Kunde #${timer.project.customer?.id ?? "?"}`;
+    t("timer.customerFallback", { id: timer.project.customer?.id ?? "?" });
 
   return (
     <>
       <section className="flex flex-wrap items-center gap-x-10 gap-y-4 border-b border-border/50 pb-8">
         <div className="shrink-0">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Aktiver Timer
+            {t("timer.active")}
           </p>
           <p className="mt-1 font-mono text-4xl font-light tabular-nums tracking-tight sm:text-5xl">
             {formatDuration(duration)}
@@ -70,20 +70,22 @@ export function ActiveTimer() {
 
         <div className="flex min-w-0 flex-1 flex-wrap items-start gap-x-8 gap-y-3 text-sm">
           <div>
-            <p className="text-xs text-muted-foreground">Kunde</p>
+            <p className="text-xs text-muted-foreground">{t("timer.customer")}</p>
             <p className="font-medium">{customerName}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Projekt</p>
+            <p className="text-xs text-muted-foreground">{t("timer.project")}</p>
             <p className="font-medium">{timer.project.name}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Aktivität</p>
+            <p className="text-xs text-muted-foreground">{t("timer.activity")}</p>
             <p className="font-medium">{timer.activity.name}</p>
           </div>
           {timer.description && (
             <div className="min-w-[12rem] flex-1">
-              <p className="text-xs text-muted-foreground">Beschreibung</p>
+              <p className="text-xs text-muted-foreground">
+                {t("timer.description")}
+              </p>
               <p className="text-muted-foreground">{timer.description}</p>
             </div>
           )}
@@ -96,21 +98,21 @@ export function ActiveTimer() {
           disabled={stopTimer.isPending}
         >
           <Square className="mr-2 h-4 w-4" />
-          Stoppen
+          {t("timer.stop")}
         </Button>
       </section>
 
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Timer stoppen?</DialogTitle>
+            <DialogTitle>{t("timer.stopConfirmTitle")}</DialogTitle>
             <DialogDescription>
-              Der laufende Zeiteintrag wird beendet.
+              {t("timer.stopConfirmDescription")}
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setConfirmOpen(false)}>
-              Abbrechen
+              {t("timer.cancel")}
             </Button>
             <Button
               variant="destructive"
@@ -120,7 +122,7 @@ export function ActiveTimer() {
                 });
               }}
             >
-              Stoppen
+              {t("timer.stop")}
             </Button>
           </div>
         </DialogContent>

@@ -37,7 +37,7 @@ describe("TimesheetEditDialog", () => {
       </QueryClientProvider>,
     );
 
-    expect(screen.getByText("Timesheet bearbeiten")).toBeInTheDocument();
+    expect(screen.getByText("Edit time entry")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Arbeit")).toBeInTheDocument();
   });
 });

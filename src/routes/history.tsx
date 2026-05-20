@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { TimesheetDataTable } from "@/components/timesheet/TimesheetDataTable";
 import { TimesheetEditDialog } from "@/components/timesheet/TimesheetEditDialog";
 import { TimesheetFilters } from "@/components/timesheet/TimesheetFilters";
+import { useTranslation } from "@/i18n";
 import { useDeleteTimesheet, useTimesheets } from "@/hooks/useApi";
 import {
   defaultHistoryRange,
@@ -31,6 +32,7 @@ function buildInitialFilters(): TimesheetFilterParams {
 }
 
 function HistoryPage() {
+  const { t } = useTranslation();
   const initial = useMemo(() => buildInitialFilters(), []);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(
     defaultHistoryRange(),
@@ -53,9 +55,11 @@ function HistoryPage() {
   return (
     <div className="flex h-full min-h-0 flex-col gap-8">
       <header className="shrink-0">
-        <h2 className="text-2xl font-semibold tracking-tight">History</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">
+          {t("history.title")}
+        </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Zeiteinträge filtern und sortieren
+          {t("history.subtitle")}
         </p>
       </header>
       <div className="shrink-0">
@@ -77,14 +81,14 @@ function HistoryPage() {
               className="ml-3"
               onClick={() => refetch()}
             >
-              Erneut laden
+              {t("history.retry")}
             </Button>
           </AlertDescription>
         </Alert>
       )}
       <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-border/50">
         {isLoading && (
-          <p className="p-6 text-muted-foreground">Lädt…</p>
+          <p className="p-6 text-muted-foreground">{t("history.loading")}</p>
         )}
         {!isLoading && !isError && (
           <TimesheetDataTable
@@ -108,7 +112,7 @@ function HistoryPage() {
             }))
           }
         >
-          Zurück
+          {t("history.prev")}
         </Button>
         <Button
           variant="outline"
@@ -117,7 +121,7 @@ function HistoryPage() {
             setAppliedFilters((f) => ({ ...f, page: (f.page ?? 1) + 1 }))
           }
         >
-          Weiter
+          {t("history.next")}
         </Button>
       </div>
       <TimesheetEditDialog

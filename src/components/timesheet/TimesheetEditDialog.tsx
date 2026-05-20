@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslation } from "@/i18n";
 import {
   useActivities,
   useProjects,
@@ -37,6 +38,7 @@ export function TimesheetEditDialog({
   open,
   onOpenChange,
 }: TimesheetEditDialogProps) {
+  const { t } = useTranslation();
   const [projectId, setProjectId] = useState("");
   const [activityId, setActivityId] = useState("");
   const [begin, setBegin] = useState<string | undefined>();
@@ -85,13 +87,21 @@ export function TimesheetEditDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Timesheet bearbeiten</DialogTitle>
+          <DialogTitle>{t("history.editTitle")}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4">
-          <DateTimePicker label="Beginn" value={begin} onChange={setBegin} />
-          <DateTimePicker label="Ende" value={end} onChange={setEnd} />
+          <DateTimePicker
+            label={t("history.colBegin")}
+            value={begin}
+            onChange={setBegin}
+          />
+          <DateTimePicker
+            label={t("history.colEnd")}
+            value={end}
+            onChange={setEnd}
+          />
           <div className="space-y-2">
-            <Label>Projekt</Label>
+            <Label>{t("history.colProject")}</Label>
             <Select value={projectId} onValueChange={setProjectId}>
               <SelectTrigger>
                 <SelectValue />
@@ -106,7 +116,7 @@ export function TimesheetEditDialog({
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Aktivität</Label>
+            <Label>{t("history.colActivity")}</Label>
             <Select value={activityId} onValueChange={setActivityId}>
               <SelectTrigger>
                 <SelectValue />
@@ -121,14 +131,14 @@ export function TimesheetEditDialog({
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Beschreibung</Label>
+            <Label>{t("history.colDescription")}</Label>
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
           <div className="space-y-2">
-            <Label>Tags</Label>
+            <Label>{t("timer.formTags")}</Label>
             <Input value={tags} onChange={(e) => setTags(e.target.value)} />
           </div>
           <div className="flex items-center gap-2">
@@ -136,15 +146,15 @@ export function TimesheetEditDialog({
               checked={billable}
               onCheckedChange={(v) => setBillable(v === true)}
             />
-            <Label>Abrechenbar</Label>
+            <Label>{t("timer.formBillable")}</Label>
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Abbrechen
+            {t("history.editCancel")}
           </Button>
           <Button onClick={handleSave} disabled={updateTimesheet.isPending}>
-            Speichern
+            {t("history.editSave")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,14 +1,16 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Clock, Home, Settings } from "lucide-react";
+import { useTranslation } from "@/i18n";
 import { cn } from "@/lib/utils";
 
-const mainNavItems = [
-  { to: "/", label: "Dashboard", icon: Home },
-  { to: "/history", label: "History", icon: Clock },
-] as const;
-
 export function Sidebar() {
+  const { t } = useTranslation();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  const mainNavItems = [
+    { to: "/", label: t("nav.dashboard"), icon: Home },
+    { to: "/history", label: t("nav.history"), icon: Clock },
+  ] as const;
 
   return (
     <aside className="flex w-52 shrink-0 flex-col border-r border-border/50 bg-background">
@@ -19,8 +21,10 @@ export function Sidebar() {
           className="h-9 w-9 shrink-0 object-contain"
         />
         <div className="min-w-0">
-          <h1 className="truncate text-sm font-semibold tracking-tight">Kimai</h1>
-          <p className="text-xs text-muted-foreground">Desktop</p>
+          <h1 className="truncate text-sm font-semibold tracking-tight">
+            {t("app.brand")}
+          </h1>
+          <p className="text-xs text-muted-foreground">{t("app.desktop")}</p>
         </div>
       </div>
 
@@ -49,7 +53,7 @@ export function Sidebar() {
           )}
         >
           <Settings className="h-4 w-4 opacity-70" />
-          Einstellungen
+          {t("nav.settings")}
         </Link>
       </nav>
     </aside>

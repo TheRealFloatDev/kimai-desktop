@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "@tanstack/react-router";
 import { listen } from "@tauri-apps/api/event";
 import { useAuthStore } from "@/hooks/useAuth";
+import { initLocale, translate, useLocaleStore } from "@/i18n";
 import { initTheme } from "@/hooks/useTheme";
 import { kimaiApi } from "@/lib/api";
 import { router } from "./router";
@@ -22,6 +23,7 @@ function AppBootstrap() {
 
   useEffect(() => {
     const init = async () => {
+      await initLocale();
       try {
         const creds = await kimaiApi.getCredentials();
         if (!creds?.url || !creds?.token) {
@@ -57,10 +59,14 @@ function AppBootstrap() {
 
   const isAuthenticating = useAuthStore((s) => s.isAuthenticating);
 
+  const locale = useLocaleStore((s) => s.locale);
+
   if (!ready || isAuthenticating) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <p className="text-muted-foreground">Lädt…</p>
+        <p className="text-muted-foreground">
+          {translate(locale, "app.loading")}
+        </p>
       </div>
     );
   }

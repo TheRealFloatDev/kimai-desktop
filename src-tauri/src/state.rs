@@ -50,10 +50,22 @@ pub struct TimerDisplayAnchor {
     pub started_at_ms: i64,
 }
 
-#[derive(Default)]
 pub struct AppState {
     pub kimai_client: Mutex<Option<KimaiClient>>,
     pub tray_snapshot: Mutex<TraySnapshot>,
     pub tray_menu_fingerprint: Mutex<u64>,
     pub timer_display_anchor: Mutex<TimerDisplayAnchor>,
+    pub locale: Mutex<String>,
+}
+
+impl Default for AppState {
+    fn default() -> Self {
+        Self {
+            kimai_client: Mutex::new(None),
+            tray_snapshot: Mutex::new(TraySnapshot::default()),
+            tray_menu_fingerprint: Mutex::new(0),
+            timer_display_anchor: Mutex::new(TimerDisplayAnchor::default()),
+            locale: Mutex::new("en".to_string()),
+        }
+    }
 }

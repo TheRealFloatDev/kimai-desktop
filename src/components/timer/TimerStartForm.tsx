@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslation } from "@/i18n";
 import {
   useActivities,
   useCustomers,
@@ -25,6 +26,7 @@ interface TimerStartFormProps {
 }
 
 export function TimerStartForm({ onSuccess }: TimerStartFormProps) {
+  const { t } = useTranslation();
   const [customerId, setCustomerId] = useState("");
   const [projectId, setProjectId] = useState("");
   const [activityId, setActivityId] = useState("");
@@ -59,7 +61,7 @@ export function TimerStartForm({ onSuccess }: TimerStartFormProps) {
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-2">
-          <Label>Kunde</Label>
+          <Label>{t("timer.formCustomer")}</Label>
           <Select
             value={customerId}
             onValueChange={(v) => {
@@ -69,7 +71,7 @@ export function TimerStartForm({ onSuccess }: TimerStartFormProps) {
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Kunde wählen" />
+              <SelectValue placeholder={t("timer.formCustomerPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {customers.map((c) => (
@@ -81,7 +83,7 @@ export function TimerStartForm({ onSuccess }: TimerStartFormProps) {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Projekt</Label>
+          <Label>{t("timer.formProject")}</Label>
           <Select
             value={projectId}
             onValueChange={(v) => {
@@ -91,7 +93,7 @@ export function TimerStartForm({ onSuccess }: TimerStartFormProps) {
             disabled={!customerId}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Projekt wählen" />
+              <SelectValue placeholder={t("timer.formProjectPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {projects.map((p) => (
@@ -103,14 +105,14 @@ export function TimerStartForm({ onSuccess }: TimerStartFormProps) {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Aktivität</Label>
+          <Label>{t("timer.formActivity")}</Label>
           <Select
             value={activityId}
             onValueChange={setActivityId}
             disabled={!projectId}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Aktivität wählen" />
+              <SelectValue placeholder={t("timer.formActivityPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {activities.map((a) => (
@@ -124,20 +126,20 @@ export function TimerStartForm({ onSuccess }: TimerStartFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label>Beschreibung</Label>
+        <Label>{t("timer.formDescription")}</Label>
         <Textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Optional"
+          placeholder={t("timer.formDescriptionPlaceholder")}
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Tags</Label>
+        <Label>{t("timer.formTags")}</Label>
         <Input
           value={tags}
           onChange={(e) => setTags(e.target.value)}
-          placeholder="Komma-getrennt"
+          placeholder={t("timer.formTagsPlaceholder")}
         />
       </div>
 
@@ -147,7 +149,7 @@ export function TimerStartForm({ onSuccess }: TimerStartFormProps) {
           checked={billable}
           onCheckedChange={(v) => setBillable(v === true)}
         />
-        <Label htmlFor="billable">Abrechenbar</Label>
+        <Label htmlFor="billable">{t("timer.formBillable")}</Label>
       </div>
 
       {startTimer.isError && (
@@ -161,7 +163,7 @@ export function TimerStartForm({ onSuccess }: TimerStartFormProps) {
         disabled={!projectId || !activityId || startTimer.isPending}
       >
         <Play className="mr-2 h-4 w-4" />
-        Timer starten
+        {t("timer.formStart")}
       </Button>
     </div>
   );

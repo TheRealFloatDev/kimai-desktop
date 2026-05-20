@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "@/i18n";
 import {
   flexRender,
   getCoreRowModel,
@@ -43,15 +44,17 @@ export function TimesheetDataTable({
   onEdit,
   onDelete,
 }: TimesheetDataTableProps) {
+  const { t } = useTranslation();
+  const dash = t("history.dash");
   const [sorting, setSorting] = useState<SortingState>([
     { id: "begin", desc: true },
   ]);
 
-  const columns: ColumnDef<TimesheetCollectionExpanded>[] = [
+  const columns: ColumnDef<TimesheetCollectionExpanded>[] = useMemo(() => [
     {
       accessorKey: "begin",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Beginn" />
+        <DataTableColumnHeader column={column} title={t("history.colBegin")} />
       ),
       cell: ({ row }) => formatDateTime(row.original.begin),
       sortingFn: (a, b) =>
@@ -61,10 +64,10 @@ export function TimesheetDataTable({
     {
       accessorKey: "end",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Ende" />
+        <DataTableColumnHeader column={column} title={t("history.colEnd")} />
       ),
       cell: ({ row }) =>
-        row.original.end ? formatDateTime(row.original.end) : "–",
+        row.original.end ? formatDateTime(row.original.end) : dash,
       sortingFn: (a, b) => {
         const ae = a.original.end ? new Date(a.original.end).getTime() : 0;
         const be = b.original.end ? new Date(b.original.end).getTime() : 0;
@@ -74,26 +77,26 @@ export function TimesheetDataTable({
     {
       accessorKey: "duration",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Dauer" />
+        <DataTableColumnHeader column={column} title={t("history.colDuration")} />
       ),
       cell: ({ row }) =>
         row.original.duration != null
           ? formatDuration(row.original.duration)
-          : "–",
+          : dash,
     },
     {
       id: "customer",
       accessorFn: (row) => row.project.customer?.name ?? "",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Kunde" />
+        <DataTableColumnHeader column={column} title={t("history.colCustomer")} />
       ),
-      cell: ({ row }) => row.original.project.customer?.name ?? "–",
+      cell: ({ row }) => row.original.project.customer?.name ?? dash,
     },
     {
       id: "project",
       accessorFn: (row) => row.project.name,
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Projekt" />
+        <DataTableColumnHeader column={column} title={t("history.colProject")} />
       ),
       cell: ({ row }) => row.original.project.name,
     },
@@ -101,18 +104,18 @@ export function TimesheetDataTable({
       id: "activity",
       accessorFn: (row) => row.activity.name,
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Aktivität" />
+        <DataTableColumnHeader column={column} title={t("history.colActivity")} />
       ),
       cell: ({ row }) => row.original.activity.name,
     },
     {
       accessorKey: "description",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Beschreibung" />
+        <DataTableColumnHeader column={column} title={t("history.colDescription")} />
       ),
       cell: ({ row }) => (
         <span className="block max-w-[200px] truncate text-muted-foreground">
-          {row.original.description ?? "–"}
+          {row.original.description ?? dash}
         </span>
       ),
     },
@@ -120,14 +123,14 @@ export function TimesheetDataTable({
       id: "cost",
       accessorFn: (row) => formatTimesheetCost(row) ?? -1,
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Preis/Kosten" />
+        <DataTableColumnHeader column={column} title={t("history.colCost")} />
       ),
       cell: ({ row }) => {
         const cost = formatTimesheetCost(row.original);
         return cost != null ? (
           <span className="tabular-nums">{formatCurrency(cost)}</span>
         ) : (
-          "–"
+          dash
         );
       },
     },
@@ -140,26 +143,26 @@ export function TimesheetDataTable({
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">Aktionen</span>
+              <span className="sr-only">{t("history.colActions")}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => onEdit(row.original)}>
               <Pencil className="mr-2 h-4 w-4" />
-              Bearbeiten
+              {t("history.edit")}
             </DropdownMenuItem>
             <DropdownMenuItem
               className="text-destructive focus:text-destructive"
               onClick={() => onDelete(row.original.id)}
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              Löschen
+              {t("history.delete")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ),
     },
-  ];
+  ], [t, dash, onEdit, onDelete]);
 
   const table = useReactTable({
     data: timesheets,
@@ -196,7 +199,7 @@ export function TimesheetDataTable({
                 colSpan={columns.length}
                 className="h-24 text-center text-muted-foreground"
               >
-                Keine Einträge
+                {t("history.empty")}
               </TableCell>
             </TableRow>
           ) : (

@@ -50,6 +50,15 @@ export const kimaiApi = {
   clearTimerDisplayAnchor: () =>
     invoke<void>("clear_timer_display_anchor"),
 
+  getAppPreferences: () =>
+    invoke<{ locale: string; autostart: boolean }>("get_app_preferences"),
+
+  setAppLocale: (locale: string) =>
+    invoke<void>("set_app_locale", { locale }),
+
+  setAutostartEnabled: (enabled: boolean) =>
+    invoke<void>("set_autostart_enabled", { enabled }),
+
   startTimer: (params: {
     projectId: number;
     activityId: number;

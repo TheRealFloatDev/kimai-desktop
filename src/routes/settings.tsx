@@ -1,6 +1,8 @@
 import { createRoute, useNavigate } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AutostartToggle } from "@/components/settings/AutostartToggle";
+import { LanguageSelector } from "@/components/settings/LanguageSelector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { useMe } from "@/hooks/useApi";
 import { useAuthStore } from "@/hooks/useAuth";
+import { useTranslation } from "@/i18n";
 import { useThemeStore, type ThemeMode } from "@/hooks/useTheme";
 import { kimaiApi } from "@/lib/api";
 import { Route as rootRoute } from "./__root";
@@ -40,6 +43,7 @@ function SettingsSection({
 }
 
 function SettingsPage() {
+  const { t } = useTranslation();
   const { data: user } = useMe();
   const navigate = useNavigate();
   const reset = useAuthStore((s) => s.reset);
@@ -74,18 +78,24 @@ function SettingsPage() {
   return (
     <div className="mx-auto max-w-xl space-y-16">
       <div>
-        <h2 className="text-2xl font-semibold tracking-tight">Einstellungen</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">
+          {t("settings.title")}
+        </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Verbindung, Darstellung und App-Infos
+          {t("settings.subtitle")}
         </p>
       </div>
 
+      <SettingsSection title={t("language.label")}>
+        <LanguageSelector />
+      </SettingsSection>
+
       <SettingsSection
-        title="Darstellung"
-        description="Hell, dunkel oder an das System anpassen"
+        title={t("settings.appearanceTitle")}
+        description={t("settings.appearanceDescription")}
       >
         <div className="space-y-2">
-          <Label>Theme</Label>
+          <Label>{t("theme.label")}</Label>
           <Select
             value={themeMode}
             onValueChange={(v) => setThemeMode(v as ThemeMode)}
@@ -94,37 +104,46 @@ function SettingsPage() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="light">Hell</SelectItem>
-              <SelectItem value="dark">Dunkel</SelectItem>
-              <SelectItem value="system">System</SelectItem>
+              <SelectItem value="light">{t("theme.light")}</SelectItem>
+              <SelectItem value="dark">{t("theme.dark")}</SelectItem>
+              <SelectItem value="system">{t("theme.system")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </SettingsSection>
 
       <SettingsSection
-        title="Verbindung"
+        title={t("settings.autostartTitle")}
+        description={t("settings.autostartDescription")}
+      >
+        <AutostartToggle />
+      </SettingsSection>
+
+      <SettingsSection
+        title={t("settings.connectionTitle")}
         description={
           user
-            ? `Angemeldet als ${user.alias ?? user.username}`
-            : "Nicht verbunden"
+            ? t("settings.signedInAs", {
+                name: user.alias ?? user.username,
+              })
+            : t("settings.notConnected")
         }
       >
         <div className="space-y-2">
-          <Label>API-URL</Label>
+          <Label>{t("settings.apiUrl")}</Label>
           <Input
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://kimai.example.com"
+            placeholder={t("settings.apiUrlPlaceholder")}
           />
         </div>
         <div className="space-y-2">
-          <Label>API-Token</Label>
+          <Label>{t("settings.apiToken")}</Label>
           <Input
             type="password"
             value={token}
             onChange={(e) => setToken(e.target.value)}
-            placeholder="Neues Token"
+            placeholder={t("settings.apiTokenPlaceholder")}
           />
         </div>
         {error && (
@@ -134,16 +153,18 @@ function SettingsPage() {
         )}
         <div className="flex flex-wrap gap-3">
           <Button onClick={handleUpdate} disabled={!url || !token || saving}>
-            Zugangsdaten aktualisieren
+            {t("settings.updateCredentials")}
           </Button>
           <Button variant="outline" onClick={handleLogout}>
-            Abmelden
+            {t("settings.logout")}
           </Button>
         </div>
       </SettingsSection>
 
-      <SettingsSection title="App">
-        <p className="text-sm text-muted-foreground">Version 0.1.0</p>
+      <SettingsSection title={t("settings.appTitle")}>
+        <p className="text-sm text-muted-foreground">
+          {t("app.version", { version: "0.1.0" })}
+        </p>
       </SettingsSection>
     </div>
   );

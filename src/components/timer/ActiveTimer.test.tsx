@@ -35,7 +35,7 @@ describe("ActiveTimer", () => {
     } as ReturnType<typeof useLiveDuration>);
 
     renderWithClient(<ActiveTimer />);
-    expect(screen.getByRole("button", { name: /Timer starten/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Start timer/i })).toBeInTheDocument();
   });
 
   it("zeigt laufenden Timer mit Dauer", () => {
@@ -56,6 +56,6 @@ describe("ActiveTimer", () => {
     renderWithClient(<ActiveTimer />);
     expect(screen.getByText("01:01:01")).toBeInTheDocument();
     expect(screen.getByText(/Kunde X/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Stoppen/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Stop/i })).toBeInTheDocument();
   });
 });

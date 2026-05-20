@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslation } from "@/i18n";
 import { useCustomers, useProjects } from "@/hooks/useApi";
 import {
   kimaiRangeToDateRange,
@@ -33,6 +34,7 @@ export function TimesheetFilters({
   onChange,
   onSearch,
 }: TimesheetFiltersProps) {
+  const { t } = useTranslation();
   const { data: customers = [] } = useCustomers();
   const { data: projects = [] } = useProjects(filters.customer);
 
@@ -45,14 +47,14 @@ export function TimesheetFilters({
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       <div className="space-y-2 lg:col-span-2">
-        <Label>Zeitraum</Label>
+        <Label>{t("history.period")}</Label>
         <DateRangePicker
           value={dateRange ?? kimaiRangeToDateRange(filters.begin, filters.end)}
           onChange={handleDateRange}
         />
       </div>
       <div className="space-y-2">
-        <Label>Kunde</Label>
+        <Label>{t("history.customer")}</Label>
         <Select
           value={filters.customer ? String(filters.customer) : "all"}
           onValueChange={(v) =>
@@ -64,10 +66,10 @@ export function TimesheetFilters({
           }
         >
           <SelectTrigger>
-            <SelectValue placeholder="Alle" />
+            <SelectValue placeholder={t("history.all")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Alle</SelectItem>
+            <SelectItem value="all">{t("history.all")}</SelectItem>
             {customers.map((c) => (
               <SelectItem key={c.id} value={String(c.id)}>
                 {c.name}
@@ -77,7 +79,7 @@ export function TimesheetFilters({
         </Select>
       </div>
       <div className="space-y-2">
-        <Label>Projekt</Label>
+        <Label>{t("history.project")}</Label>
         <Select
           value={filters.project ? String(filters.project) : "all"}
           onValueChange={(v) =>
@@ -89,10 +91,10 @@ export function TimesheetFilters({
           disabled={!filters.customer}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Alle" />
+            <SelectValue placeholder={t("history.all")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Alle</SelectItem>
+            <SelectItem value="all">{t("history.all")}</SelectItem>
             {projects.map((p) => (
               <SelectItem key={p.id} value={String(p.id)}>
                 {p.name}
@@ -102,17 +104,17 @@ export function TimesheetFilters({
         </Select>
       </div>
       <div className="space-y-2 lg:col-span-4">
-        <Label>Suche</Label>
+        <Label>{t("history.search")}</Label>
         <div className="flex gap-2">
           <Input
             value={filters.term ?? ""}
             onChange={(e) => onChange({ ...filters, term: e.target.value })}
-            placeholder="Freitextsuche…"
+            placeholder={t("history.searchPlaceholder")}
             onKeyDown={(e) => e.key === "Enter" && onSearch()}
           />
           <Button onClick={onSearch}>
             <Search className="mr-2 h-4 w-4" />
-            Suchen
+            {t("history.searchButton")}
           </Button>
         </div>
       </div>

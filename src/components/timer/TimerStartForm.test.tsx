@@ -28,7 +28,7 @@ describe("TimerStartForm", () => {
         <TimerStartForm />
       </QueryClientProvider>,
     );
-    expect(screen.getByRole("button", { name: /Timer starten/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /Start timer/i })).toBeDisabled();
   });
 
   it("rendert Kunden-Dropdown", () => {
@@ -38,8 +38,8 @@ describe("TimerStartForm", () => {
         <TimerStartForm />
       </QueryClientProvider>,
     );
-    expect(screen.getByText("Kunde")).toBeInTheDocument();
-    expect(screen.getByText("Projekt")).toBeInTheDocument();
-    expect(screen.getByText("Aktivität")).toBeInTheDocument();
+    expect(screen.getByText("Customer")).toBeInTheDocument();
+    expect(screen.getByText("Project")).toBeInTheDocument();
+    expect(screen.getByText("Activity")).toBeInTheDocument();
   });
 });
