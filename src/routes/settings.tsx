@@ -84,7 +84,7 @@ function SettingsPage() {
   };
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto">
+    <div className="h-full min-h-0 overflow-y-auto overscroll-contain">
       <div className="mx-auto max-w-xl space-y-16 pb-4">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">

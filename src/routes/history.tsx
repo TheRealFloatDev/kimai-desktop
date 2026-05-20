@@ -69,8 +69,8 @@ function HistoryPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-0 flex-1 w-full max-w-5xl flex-col gap-4 overflow-hidden">
-      <header className="shrink-0">
+    <div className="mx-auto grid h-full min-h-0 w-full max-w-5xl grid-rows-[auto_auto_auto_minmax(0,1fr)_auto] gap-4 overflow-hidden">
+      <header>
         <h2 className="text-2xl font-semibold tracking-tight">
           {t("history.title")}
         </h2>
@@ -78,17 +78,15 @@ function HistoryPage() {
           {t("history.subtitle")}
         </p>
       </header>
-      <div className="shrink-0">
-        <TimesheetFilters
-          filters={filters}
-          dateRange={dateRange}
-          onDateRangeChange={setDateRange}
-          onChange={setFilters}
-          onSearch={() => setAppliedFilters({ ...filters, page: 1 })}
-        />
-      </div>
-      {isError && (
-        <Alert variant="destructive" className="shrink-0">
+      <TimesheetFilters
+        filters={filters}
+        dateRange={dateRange}
+        onDateRangeChange={setDateRange}
+        onChange={setFilters}
+        onSearch={() => setAppliedFilters({ ...filters, page: 1 })}
+      />
+      {isError ? (
+        <Alert variant="destructive">
           <AlertDescription>
             {String(error)}
             <Button
@@ -101,8 +99,10 @@ function HistoryPage() {
             </Button>
           </AlertDescription>
         </Alert>
+      ) : (
+        <div aria-hidden className="h-0 min-h-0 overflow-hidden" />
       )}
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="min-h-0 overflow-y-auto overscroll-contain">
         {isLoading && (
           <p className="text-muted-foreground">{t("history.loading")}</p>
         )}
@@ -117,7 +117,7 @@ function HistoryPage() {
           />
         )}
       </div>
-      <div className="flex shrink-0 justify-between pt-1">
+      <div className="flex justify-between pt-1">
         <Button
           variant="outline"
           disabled={(appliedFilters.page ?? 1) <= 1}
