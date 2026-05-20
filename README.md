@@ -13,7 +13,7 @@ A native desktop client for [Kimai](https://www.kimai.org/) time tracking — bu
 - **Background operation** — Closing the window hides the app; quit fully via tray **Quit**
 - **Auto-start** — Optional launch at login
 - **Updates** — In-app updater via GitHub Releases (sidebar notification)
-- **Languages** — English, German, Dutch, French, Spanish, Italian, Polish, Portuguese, Czech
+- **Languages** — English, German, Dutch, French, Spanish
 
 API credentials are stored locally via Tauri Stronghold; requests run through the Rust backend so the token never reaches the webview.
 
@@ -27,7 +27,7 @@ API credentials are stored locally via Tauri Stronghold; requests run through th
 ### Development
 
 - [Node.js](https://nodejs.org/) (LTS)
-- [pnpm](https://pnpm.io/) 9.x (`packageManager` in `package.json`)
+- [pnpm](https://pnpm.io/) 11.x (`packageManager` in `package.json`)
 - [Rust](https://www.rust-lang.org/) stable
 - Platform deps for [Tauri 2](https://v2.tauri.app/start/prerequisites/) (WebKit on Linux, Xcode CLT on macOS, etc.)
 
