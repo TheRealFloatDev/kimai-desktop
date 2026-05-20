@@ -28,10 +28,7 @@ pub async fn set_app_locale(
 }
 
 #[tauri::command]
-pub async fn set_autostart_enabled(
-    app: tauri::AppHandle,
-    enabled: bool,
-) -> Result<(), String> {
+pub async fn set_autostart_enabled(app: tauri::AppHandle, enabled: bool) -> Result<(), String> {
     use tauri_plugin_autostart::ManagerExt;
 
     let autostart = app.autolaunch();

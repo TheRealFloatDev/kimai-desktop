@@ -204,10 +204,7 @@ impl KimaiClient {
             HeaderValue::from_str(&format!("Bearer {}", token.trim()))
                 .map_err(|e| e.to_string())?,
         );
-        headers.insert(
-            CONTENT_TYPE,
-            HeaderValue::from_static("application/json"),
-        );
+        headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
         let client = reqwest::Client::builder()
             .default_headers(headers)
             .build()
@@ -318,7 +315,10 @@ impl KimaiClient {
         self.get("/api/customers?visible=1&ignoreDates=1").await
     }
 
-    pub async fn get_projects(&self, customer_id: Option<i64>) -> Result<Vec<ProjectCollection>, String> {
+    pub async fn get_projects(
+        &self,
+        customer_id: Option<i64>,
+    ) -> Result<Vec<ProjectCollection>, String> {
         let mut path = "/api/projects?visible=1&ignoreDates=1".to_string();
         if let Some(id) = customer_id {
             path.push_str(&format!("&customer={}", id));
@@ -326,7 +326,10 @@ impl KimaiClient {
         self.get(&path).await
     }
 
-    pub async fn get_activities(&self, project_id: Option<i64>) -> Result<Vec<ActivityCollection>, String> {
+    pub async fn get_activities(
+        &self,
+        project_id: Option<i64>,
+    ) -> Result<Vec<ActivityCollection>, String> {
         let mut path = "/api/activities?visible=1&ignoreDates=1".to_string();
         if let Some(id) = project_id {
             path.push_str(&format!("&project={}", id));
@@ -334,7 +337,10 @@ impl KimaiClient {
         self.get(&path).await
     }
 
-    pub async fn get_recent(&self, size: Option<i32>) -> Result<Vec<TimesheetCollectionExpanded>, String> {
+    pub async fn get_recent(
+        &self,
+        size: Option<i32>,
+    ) -> Result<Vec<TimesheetCollectionExpanded>, String> {
         let size = size.unwrap_or(10);
         self.get(&format!("/api/timesheets/recent?size={}", size))
             .await
@@ -356,14 +362,8 @@ impl KimaiClient {
     ) -> Result<Vec<TimesheetCollectionExpanded>, String> {
         let mut query = vec![
             ("full".to_string(), "1".to_string()),
-            (
-                "size".to_string(),
-                params.size.unwrap_or(50).to_string(),
-            ),
-            (
-                "page".to_string(),
-                params.page.unwrap_or(1).to_string(),
-            ),
+            ("size".to_string(), params.size.unwrap_or(50).to_string()),
+            ("page".to_string(), params.page.unwrap_or(1).to_string()),
         ];
         if let Some(begin) = params.begin {
             query.push(("begin".to_string(), begin));

@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Clock, Home, Settings } from "lucide-react";
+import { UpdateCard } from "@/components/settings/UpdateCard";
 import { TimerStartButton } from "@/components/timer/TimerStartButton";
 import { useTranslation } from "@/i18n";
 import { cn } from "@/lib/utils";
@@ -48,6 +49,8 @@ export function Sidebar() {
           </Link>
         ))}
       </nav>
+
+      <UpdateCard />
 
       <nav className="px-3 pb-6">
         <Link

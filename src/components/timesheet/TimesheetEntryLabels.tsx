@@ -1,22 +1,28 @@
-import { useTranslation } from "@/i18n";
+import {
+  Building2,
+  Folder,
+  ListTodo,
+  TextAlignStart,
+  type LucideIcon,
+} from "lucide-react";
 import type { TimesheetCollectionExpanded } from "@/lib/types.generated";
 import { KimaiColorDot } from "./ColorDot";
 
-function LabelRow({
-  label,
+function EntryChip({
+  icon: Icon,
   name,
   colorEntity,
 }: {
-  label: string;
+  icon: LucideIcon;
   name: string;
   colorEntity?: { color?: string; color_safe?: string } | null;
 }) {
   return (
-    <div className="flex min-w-0 items-center gap-2 text-sm">
-      <span className="w-16 shrink-0 text-muted-foreground">{label}</span>
+    <span className="inline-flex min-w-0 max-w-full items-center gap-1.5">
+      <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/70" strokeWidth={1.75} />
       <KimaiColorDot entity={colorEntity} />
-      <span className="truncate font-medium">{name}</span>
-    </div>
+      <span className="truncate text-sm font-medium">{name}</span>
+    </span>
   );
 }
 
@@ -25,33 +31,40 @@ export function TimesheetEntryLabels({
 }: {
   entry: TimesheetCollectionExpanded;
 }) {
-  const { t } = useTranslation();
   const customer = entry.project.customer;
 
   return (
-    <div className="min-w-0 space-y-1">
-      {customer && (
-        <LabelRow
-          label={t("timer.customer")}
-          name={customer.name}
-          colorEntity={customer}
+    <div className="min-w-0 space-y-0.5">
+      <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-0.5">
+        {customer && (
+          <EntryChip
+            icon={Building2}
+            name={customer.name}
+            colorEntity={customer}
+          />
+        )}
+        <EntryChip
+          icon={Folder}
+          name={entry.project.name}
+          colorEntity={entry.project}
         />
-      )}
-      <LabelRow
-        label={t("timer.project")}
-        name={entry.project.name}
-        colorEntity={entry.project}
-      />
-      <LabelRow
-        label={t("timer.activity")}
-        name={entry.activity.name}
-        colorEntity={entry.activity}
-      />
-      {entry.description && (
-        <p className="pt-1 pl-[4.5rem] text-sm text-muted-foreground">
-          {entry.description}
-        </p>
-      )}
+      </div>
+      <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-0.5">
+        <EntryChip
+          icon={ListTodo}
+          name={entry.activity.name}
+          colorEntity={entry.activity}
+        />
+        {entry.description && (
+          <span className="inline-flex min-w-0 max-w-full items-center gap-1.5 text-muted-foreground">
+            <TextAlignStart
+              className="h-3.5 w-3.5 shrink-0 opacity-70"
+              strokeWidth={1.75}
+            />
+            <span className="truncate text-sm">{entry.description}</span>
+          </span>
+        )}
+      </div>
     </div>
   );
 }

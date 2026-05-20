@@ -116,6 +116,15 @@
     "logout": "Afmelden",
     "appTitle": "App"
   },
+  "updater": {
+    "title": "Update beschikbaar",
+    "version": "Versie {{version}}",
+    "download": "Update downloaden",
+    "downloading": "Bezig met downloaden…",
+    "progress": "{{percent}}% gedownload",
+    "restart": "Herstarten om toe te passen",
+    "retry": "Opnieuw controleren"
+  },
   "setup": {
     "title": "Kimai Desktop instellen",
     "description": "Instantie-URL zonder /api (bijv. https://kimai.example.com) en je API-token.",

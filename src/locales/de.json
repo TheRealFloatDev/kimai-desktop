@@ -116,6 +116,15 @@
     "logout": "Abmelden",
     "appTitle": "App"
   },
+  "updater": {
+    "title": "Update verfügbar",
+    "version": "Version {{version}}",
+    "download": "Update herunterladen",
+    "downloading": "Wird heruntergeladen…",
+    "progress": "{{percent}}% heruntergeladen",
+    "restart": "Neu starten",
+    "retry": "Erneut prüfen"
+  },
   "setup": {
     "title": "Kimai Desktop einrichten",
     "description": "Instanz-URL ohne /api (z. B. https://kimai.example.com) und dein API-Token.",

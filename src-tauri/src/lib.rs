@@ -11,7 +11,7 @@ mod tray;
 use commands::{
     clear_stored_credentials, clear_timer_display_anchor, delete_timesheet, get_active_timer,
     get_activities, get_app_preferences, get_credentials, get_customers, get_me, get_projects,
-    get_recent, get_today_timesheets, get_timer_display_seconds, get_working_stats,
+    get_recent, get_timer_display_seconds, get_today_timesheets, get_working_stats,
     list_timesheets, reset_timer_display_anchor, restart_timer, set_app_locale,
     set_autostart_enabled, set_credentials, start_timer, stop_timer, update_timesheet,
     validate_connection, validate_stored_connection,
@@ -23,7 +23,9 @@ use tray::{hide_main_window, setup_tray, show_window, start_tray_update_loop};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let mut builder = tauri::Builder::default();
+    let mut builder = tauri::Builder::default()
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_updater::Builder::new().build());
 
     #[cfg(desktop)]
     {

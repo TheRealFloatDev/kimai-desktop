@@ -34,16 +34,16 @@ export function HistoryList({
   }
 
   return (
-    <ul className="space-y-3">
+    <ul className="space-y-1">
       {timesheets.map((entry) => (
         <li
           key={entry.id}
-          className="flex items-start gap-5 rounded-lg py-2"
+          className="flex items-center gap-4 rounded-lg py-1"
         >
           <TimesheetDurationPriceAside entry={entry} />
-          <div className="min-w-0 flex-1 space-y-1">
+          <div className="min-w-0 flex-1 space-y-0.5">
             <TimesheetEntryLabels entry={entry} />
-            <p className="pl-[4.5rem] text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {formatDateTime(entry.begin)}
               {entry.end ? ` → ${formatDateTime(entry.end)}` : ""}
             </p>

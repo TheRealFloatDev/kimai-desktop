@@ -39,16 +39,13 @@ export function TimerStartButton() {
       <>
         <Button
           variant="destructive"
-          className="h-auto w-full flex-col gap-0.5 py-2.5"
+          className="h-9 w-full justify-between gap-2 px-3"
           onClick={() => setConfirmOpen(true)}
           disabled={stopTimer.isPending}
         >
-          <span className="font-mono text-lg font-light tabular-nums leading-none">
+          <Square className="h-4 w-4 shrink-0" />
+          <span className="min-w-0 flex-1 truncate text-center font-mono text-sm font-light tabular-nums">
             {formatDuration(duration)}
-          </span>
-          <span className="flex items-center text-xs font-medium">
-            <Square className="mr-1.5 h-3.5 w-3.5" />
-            {t("timer.stop")}
           </span>
         </Button>
 

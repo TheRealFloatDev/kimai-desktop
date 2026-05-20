@@ -9,11 +9,13 @@ use tauri::{
 
 use crate::commands::auth::get_client;
 use crate::credentials::load_credentials;
-use crate::kimai::client::{KimaiClient, TimesheetEditForm};
 use crate::i18n;
+use crate::kimai::client::{KimaiClient, TimesheetEditForm};
 use crate::macos_dock::set_dock_visible;
 use crate::state::{AppState, TrayRecentEntry, TraySnapshot, TrayStartEntry};
-use crate::timer_display::{clear_display_anchor, display_elapsed_secs, format_display_duration, reset_display_anchor_now};
+use crate::timer_display::{
+    clear_display_anchor, display_elapsed_secs, format_display_duration, reset_display_anchor_now,
+};
 
 pub const TRAY_ID: &str = "main";
 
@@ -61,7 +63,10 @@ pub fn setup_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     if let Ok(menu) = build_tray_menu(app, &TraySnapshot::default()) {
         if let Some(tray) = app.tray_by_id(TRAY_ID) {
             let _ = tray.set_menu(Some(menu));
-            *app.state::<AppState>().tray_menu_fingerprint.lock().unwrap() = 0;
+            *app.state::<AppState>()
+                .tray_menu_fingerprint
+                .lock()
+                .unwrap() = 0;
         }
     }
 
@@ -196,7 +201,11 @@ fn build_start_section(
         let parts: Vec<&str> = entry.label.split(" · ").collect();
         let customer = parts.first().copied().unwrap_or("Sonstige").to_string();
         let project = parts.get(1).copied().unwrap_or("Projekt").to_string();
-        tree.entry(customer).or_default().entry(project).or_default().push(entry);
+        tree.entry(customer)
+            .or_default()
+            .entry(project)
+            .or_default()
+            .push(entry);
     }
 
     let mut customer_subs: Vec<Submenu<tauri::Wry>> = Vec::new();
@@ -272,7 +281,10 @@ fn truncate_label(s: &str, max: usize) -> String {
     if s.chars().count() <= max {
         s.to_string()
     } else {
-        format!("{}…", s.chars().take(max.saturating_sub(1)).collect::<String>())
+        format!(
+            "{}…",
+            s.chars().take(max.saturating_sub(1)).collect::<String>()
+        )
     }
 }
 
@@ -313,10 +325,7 @@ async fn refresh_tray_snapshot(app: &AppHandle) -> TraySnapshot {
                         timesheet_id: r.id,
                         project_id: r.project.id,
                         activity_id: r.activity.id,
-                        label: format!(
-                            "{} · {} · {}",
-                            customer, r.project.name, r.activity.name
-                        ),
+                        label: format!("{} · {} · {}", customer, r.project.name, r.activity.name),
                     }
                 })
                 .collect();
@@ -424,7 +433,10 @@ async fn start_from_tray(app: &AppHandle, project_id: i64, activity_id: i64) -> 
     let entity = client.start_timer(form).await?;
     reset_display_anchor_now(&app.state::<AppState>(), Some(entity.id));
     let snapshot = refresh_tray_snapshot(app).await;
-    *app.state::<AppState>().tray_menu_fingerprint.lock().unwrap() = 0;
+    *app.state::<AppState>()
+        .tray_menu_fingerprint
+        .lock()
+        .unwrap() = 0;
     update_tray_icon(app, snapshot.duration_secs);
     refresh_tray_menu_if_needed(app, &snapshot);
     Ok(())
@@ -436,7 +448,10 @@ async fn restart_from_tray(app: &AppHandle, timesheet_id: i64) -> Result<(), Str
     let entity = client.restart_timesheet(timesheet_id).await?;
     reset_display_anchor_now(&app.state::<AppState>(), Some(entity.id));
     let snapshot = refresh_tray_snapshot(app).await;
-    *app.state::<AppState>().tray_menu_fingerprint.lock().unwrap() = 0;
+    *app.state::<AppState>()
+        .tray_menu_fingerprint
+        .lock()
+        .unwrap() = 0;
     update_tray_icon(app, snapshot.duration_secs);
     refresh_tray_menu_if_needed(app, &snapshot);
     Ok(())
@@ -448,7 +463,10 @@ async fn stop_timer_by_id(app: &AppHandle, id: i64) -> Result<(), String> {
     client.stop_timer(id).await?;
     clear_display_anchor(&app.state::<AppState>());
     let snapshot = refresh_tray_snapshot(app).await;
-    *app.state::<AppState>().tray_menu_fingerprint.lock().unwrap() = 0;
+    *app.state::<AppState>()
+        .tray_menu_fingerprint
+        .lock()
+        .unwrap() = 0;
     update_tray_icon(app, snapshot.duration_secs);
     refresh_tray_menu_if_needed(app, &snapshot);
     Ok(())
@@ -480,7 +498,12 @@ pub fn show_window(app: &AppHandle) {
 }
 
 pub fn update_tray_from_snapshot(app: &AppHandle) {
-    let snapshot = app.state::<AppState>().tray_snapshot.lock().unwrap().clone();
+    let snapshot = app
+        .state::<AppState>()
+        .tray_snapshot
+        .lock()
+        .unwrap()
+        .clone();
     update_tray_icon(app, snapshot.duration_secs);
     refresh_tray_menu_if_needed(app, &snapshot);
 }
@@ -488,11 +511,7 @@ pub fn update_tray_from_snapshot(app: &AppHandle) {
 pub fn update_tray_icon(app: &AppHandle, duration_secs: Option<i64>) {
     let locale = current_locale(app);
     let tooltip = match duration_secs {
-        Some(s) => i18n::t_fmt(
-            &locale,
-            "tray.tooltipRunning",
-            &format_display_duration(s),
-        ),
+        Some(s) => i18n::t_fmt(&locale, "tray.tooltipRunning", &format_display_duration(s)),
         None => i18n::t(&locale, "tray.tooltipIdle"),
     };
 

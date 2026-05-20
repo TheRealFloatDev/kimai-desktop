@@ -26,11 +26,11 @@ export function RecentList() {
       {!isLoading && recent.length === 0 && (
         <p className="text-sm text-muted-foreground">{t("timer.recentEmpty")}</p>
       )}
-      <ul className="space-y-3">
+      <ul className="space-y-1">
         {recent.map((entry) => (
           <li
             key={entry.id}
-            className="flex items-center gap-5 rounded-lg py-2"
+            className="flex items-center gap-4 rounded-lg py-1"
           >
             <TimesheetDurationAside duration={entry.duration} />
             <div className="min-w-0 flex-1">

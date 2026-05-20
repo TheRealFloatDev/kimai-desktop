@@ -1,6 +1,8 @@
 use tauri::State;
 
-use crate::credentials::{clear_credentials, load_credentials, save_credentials, CredentialsResponse};
+use crate::credentials::{
+    clear_credentials, load_credentials, save_credentials, CredentialsResponse,
+};
 use crate::kimai::client::{Credentials, KimaiClient, UserEntity};
 use crate::state::AppState;
 
@@ -44,10 +46,7 @@ pub async fn get_credentials(app: tauri::AppHandle) -> Result<Option<Credentials
 }
 
 #[tauri::command]
-pub async fn validate_connection(
-    url: String,
-    token: String,
-) -> Result<UserEntity, String> {
+pub async fn validate_connection(url: String, token: String) -> Result<UserEntity, String> {
     let client = KimaiClient::new(url, token)?;
     client.validate().await
 }

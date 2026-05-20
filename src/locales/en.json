@@ -116,6 +116,15 @@
     "logout": "Log out",
     "appTitle": "App"
   },
+  "updater": {
+    "title": "Update available",
+    "version": "Version {{version}}",
+    "download": "Download update",
+    "downloading": "Downloading…",
+    "progress": "{{percent}}% downloaded",
+    "restart": "Restart to apply",
+    "retry": "Check again"
+  },
   "setup": {
     "title": "Set up Kimai Desktop",
     "description": "Instance URL without /api (e.g. https://kimai.example.com) and your API token.",

@@ -1,6 +1,14 @@
-# Tauri + React + Typescript
+# Kimai Desktop
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+Desktop client for [Kimai](https://www.kimai.org/) (Tauri 2 + React).
+
+## Releases & updates
+
+See [docs/RELEASES.md](docs/RELEASES.md) for GitHub Actions builds and the in-app updater setup.
+
+## Development
+
+This project uses Tauri, React and TypeScript with Vite.
 
 ## Recommended IDE Setup
 

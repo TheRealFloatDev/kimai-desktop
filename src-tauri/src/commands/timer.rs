@@ -3,9 +3,7 @@ use tauri::State;
 use crate::commands::auth::get_client;
 use crate::kimai::client::{TimesheetCollectionExpanded, TimesheetEditForm};
 use crate::state::AppState;
-use crate::timer_display::{
-    clear_display_anchor, display_elapsed_secs, reset_display_anchor_now,
-};
+use crate::timer_display::{clear_display_anchor, display_elapsed_secs, reset_display_anchor_now};
 
 #[tauri::command]
 pub async fn start_timer(
@@ -80,11 +78,7 @@ pub async fn get_timer_display_seconds(state: State<'_, AppState>) -> Result<Opt
         clear_display_anchor(&state);
         return Ok(None);
     };
-    Ok(Some(display_elapsed_secs(
-        &state,
-        timer.id,
-        &timer.begin,
-    )))
+    Ok(Some(display_elapsed_secs(&state, timer.id, &timer.begin)))
 }
 
 #[tauri::command]

@@ -8,6 +8,8 @@
     "core:tray:default",
     "opener:default",
     "stronghold:default",
-    "autostart:default"
+    "autostart:default",
+    "updater:default",
+    "process:default"
   ]
 }

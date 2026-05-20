@@ -116,6 +116,15 @@
     "logout": "Cerrar sesión",
     "appTitle": "App"
   },
+  "updater": {
+    "title": "Actualización disponible",
+    "version": "Versión {{version}}",
+    "download": "Descargar actualización",
+    "downloading": "Descargando…",
+    "progress": "{{percent}}% descargado",
+    "restart": "Reiniciar para aplicar",
+    "retry": "Comprobar de nuevo"
+  },
   "setup": {
     "title": "Configurar Kimai Desktop",
     "description": "URL de instancia sin /api (p. ej. https://kimai.example.com) y tu token API.",

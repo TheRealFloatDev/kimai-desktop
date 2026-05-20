@@ -1,5 +1,6 @@
 import { createRoute, useNavigate } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { getVersion } from "@tauri-apps/api/app";
+import { useEffect, useState, type ReactNode } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AutostartToggle } from "@/components/settings/AutostartToggle";
 import { LanguageSelector } from "@/components/settings/LanguageSelector";
@@ -18,6 +19,7 @@ import { useAuthStore } from "@/hooks/useAuth";
 import { useTranslation } from "@/i18n";
 import { useThemeStore, type ThemeMode } from "@/hooks/useTheme";
 import { kimaiApi } from "@/lib/api";
+import { isTauriRuntime } from "@/lib/updater";
 import { Route as rootRoute } from "./__root";
 
 function SettingsSection({
@@ -53,6 +55,12 @@ function SettingsPage() {
   const [token, setToken] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [appVersion, setAppVersion] = useState("0.1.0");
+
+  useEffect(() => {
+    if (!isTauriRuntime()) return;
+    void getVersion().then(setAppVersion);
+  }, []);
 
   const handleUpdate = async () => {
     setError(null);
@@ -163,7 +171,7 @@ function SettingsPage() {
 
       <SettingsSection title={t("settings.appTitle")}>
         <p className="text-sm text-muted-foreground">
-          {t("app.version", { version: "0.1.0" })}
+          {t("app.version", { version: appVersion })}
         </p>
       </SettingsSection>
     </div>

@@ -116,6 +116,15 @@
     "logout": "Se déconnecter",
     "appTitle": "App"
   },
+  "updater": {
+    "title": "Mise à jour disponible",
+    "version": "Version {{version}}",
+    "download": "Télécharger la mise à jour",
+    "downloading": "Téléchargement…",
+    "progress": "{{percent}}% téléchargé",
+    "restart": "Redémarrer pour appliquer",
+    "retry": "Vérifier à nouveau"
+  },
   "setup": {
     "title": "Configurer Kimai Desktop",
     "description": "URL d'instance sans /api (ex. https://kimai.example.com) et votre jeton API.",

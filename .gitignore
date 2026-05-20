@@ -3,3 +3,7 @@ node_modules/
 
 .DS_STORE
 dist/
+
+# Updater signing (public key is embedded in tauri.conf.json)
+src-tauri/.tauri-updater.key
+src-tauri/.tauri-updater.key.pub
