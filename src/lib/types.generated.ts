@@ -100,6 +100,7 @@ export interface TimesheetCollectionExpanded {
   description?: string;
   tags?: string[];
   rate?: number;
+  internalRate?: number;
   billable?: boolean;
   project: ProjectExpanded;
   activity: ActivityExpanded;

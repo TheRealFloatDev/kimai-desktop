@@ -12,21 +12,22 @@ export function Sidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <aside className="flex w-56 flex-col border-r bg-card">
-      <div className="border-b px-4 py-5">
-        <h1 className="text-lg font-semibold">Kimai Desktop</h1>
+    <aside className="flex w-52 shrink-0 flex-col border-r border-border/50 bg-background">
+      <div className="px-5 py-8">
+        <h1 className="text-base font-semibold tracking-tight">Kimai</h1>
+        <p className="text-xs text-muted-foreground">Desktop</p>
       </div>
-      <nav className="flex flex-1 flex-col gap-1 p-3">
+      <nav className="flex flex-1 flex-col gap-0.5 px-3">
         {navItems.map(({ to, label, icon: Icon }) => (
           <Link
             key={to}
             to={to}
             className={cn(
-              "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent",
-              pathname === to && "bg-accent text-accent-foreground",
+              "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted/80",
+              pathname === to && "bg-muted text-foreground",
             )}
           >
-            <Icon className="h-4 w-4" />
+            <Icon className="h-4 w-4 opacity-70" />
             {label}
           </Link>
         ))}

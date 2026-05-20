@@ -31,5 +31,6 @@ describe("TimesheetDataTable", () => {
     expect(screen.getByText("ACME")).toBeInTheDocument();
     expect(screen.getByText("Web")).toBeInTheDocument();
     expect(screen.getByText("Dev")).toBeInTheDocument();
+    expect(screen.getByText("100,00 €")).toBeInTheDocument();
   });
 });

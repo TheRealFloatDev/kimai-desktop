@@ -51,8 +51,13 @@ function HistoryPage() {
   const deleteTimesheet = useDeleteTimesheet();
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-4">
-      <h2 className="shrink-0 text-2xl font-semibold tracking-tight">History</h2>
+    <div className="flex h-full min-h-0 flex-col gap-8">
+      <header className="shrink-0">
+        <h2 className="text-2xl font-semibold tracking-tight">History</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Zeiteinträge filtern und sortieren
+        </p>
+      </header>
       <div className="shrink-0">
         <TimesheetFilters
           filters={filters}
@@ -77,9 +82,9 @@ function HistoryPage() {
           </AlertDescription>
         </Alert>
       )}
-      <div className="min-h-0 flex-1 overflow-auto">
+      <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-border/50">
         {isLoading && (
-          <p className="text-muted-foreground">Lädt…</p>
+          <p className="p-6 text-muted-foreground">Lädt…</p>
         )}
         {!isLoading && !isError && (
           <TimesheetDataTable

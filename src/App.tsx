@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "@tanstack/react-router";
 import { listen } from "@tauri-apps/api/event";
 import { useAuthStore } from "@/hooks/useAuth";
+import { initTheme } from "@/hooks/useTheme";
 import { kimaiApi } from "@/lib/api";
 import { router } from "./router";
 
@@ -68,6 +69,10 @@ function AppBootstrap() {
 }
 
 export default function App() {
+  useEffect(() => {
+    initTheme();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AppBootstrap />

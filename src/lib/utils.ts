@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { TimesheetCollectionExpanded } from "@/lib/types.generated";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -50,6 +51,15 @@ export function formatCurrency(amount: number, currency = "EUR"): string {
     style: "currency",
     currency,
   }).format(amount);
+}
+
+/** Kimai liefert `rate` (extern) oder `internalRate` (intern). */
+export function formatTimesheetCost(
+  ts: TimesheetCollectionExpanded,
+): number | null {
+  if (ts.rate != null) return ts.rate;
+  if (ts.internalRate != null) return ts.internalRate;
+  return null;
 }
 
 /** e.g. 2h 15m from seconds */

@@ -118,6 +118,12 @@ pub struct TimesheetCollectionExpanded {
     pub duration: Option<i64>,
     pub description: Option<String>,
     pub tags: Option<Vec<String>>,
+    #[serde(default)]
+    pub rate: Option<f64>,
+    #[serde(rename = "internalRate", default)]
+    pub internal_rate: Option<f64>,
+    #[serde(default)]
+    pub billable: Option<bool>,
     pub project: ProjectExpanded,
     pub activity: ActivityExpanded,
 }

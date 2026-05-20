@@ -1,11 +1,15 @@
+import { useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
   type ColumnDef,
+  type SortingState,
 } from "@tanstack/react-table";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +29,7 @@ import {
   formatCurrency,
   formatDateTime,
   formatDuration,
+  formatTimesheetCost,
 } from "@/lib/utils";
 
 interface TimesheetDataTableProps {
@@ -38,21 +43,39 @@ export function TimesheetDataTable({
   onEdit,
   onDelete,
 }: TimesheetDataTableProps) {
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "begin", desc: true },
+  ]);
+
   const columns: ColumnDef<TimesheetCollectionExpanded>[] = [
     {
       accessorKey: "begin",
-      header: "Beginn",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Beginn" />
+      ),
       cell: ({ row }) => formatDateTime(row.original.begin),
+      sortingFn: (a, b) =>
+        new Date(a.original.begin).getTime() -
+        new Date(b.original.begin).getTime(),
     },
     {
       accessorKey: "end",
-      header: "Ende",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Ende" />
+      ),
       cell: ({ row }) =>
         row.original.end ? formatDateTime(row.original.end) : "–",
+      sortingFn: (a, b) => {
+        const ae = a.original.end ? new Date(a.original.end).getTime() : 0;
+        const be = b.original.end ? new Date(b.original.end).getTime() : 0;
+        return ae - be;
+      },
     },
     {
       accessorKey: "duration",
-      header: "Dauer",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Dauer" />
+      ),
       cell: ({ row }) =>
         row.original.duration != null
           ? formatDuration(row.original.duration)
@@ -60,39 +83,58 @@ export function TimesheetDataTable({
     },
     {
       id: "customer",
-      header: "Kunde",
+      accessorFn: (row) => row.project.customer?.name ?? "",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Kunde" />
+      ),
       cell: ({ row }) => row.original.project.customer?.name ?? "–",
     },
     {
       id: "project",
-      header: "Projekt",
+      accessorFn: (row) => row.project.name,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Projekt" />
+      ),
       cell: ({ row }) => row.original.project.name,
     },
     {
       id: "activity",
-      header: "Aktivität",
+      accessorFn: (row) => row.activity.name,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Aktivität" />
+      ),
       cell: ({ row }) => row.original.activity.name,
     },
     {
       accessorKey: "description",
-      header: "Beschreibung",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Beschreibung" />
+      ),
       cell: ({ row }) => (
-        <span className="block max-w-[200px] truncate">
+        <span className="block max-w-[200px] truncate text-muted-foreground">
           {row.original.description ?? "–"}
         </span>
       ),
     },
     {
-      accessorKey: "rate",
-      header: "Preis/Kosten",
-      cell: ({ row }) =>
-        row.original.rate != null && row.original.rate > 0
-          ? formatCurrency(row.original.rate)
-          : "–",
+      id: "cost",
+      accessorFn: (row) => formatTimesheetCost(row) ?? -1,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Preis/Kosten" />
+      ),
+      cell: ({ row }) => {
+        const cost = formatTimesheetCost(row.original);
+        return cost != null ? (
+          <span className="tabular-nums">{formatCurrency(cost)}</span>
+        ) : (
+          "–"
+        );
+      },
     },
     {
       id: "actions",
-      header: "",
+      enableSorting: false,
+      header: () => null,
       cell: ({ row }) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -122,17 +164,20 @@ export function TimesheetDataTable({
   const table = useReactTable({
     data: timesheets,
     columns,
+    state: { sorting },
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   });
 
   return (
-    <div className="rounded-md border">
+    <div className="overflow-hidden rounded-lg">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((hg) => (
-            <TableRow key={hg.id}>
+            <TableRow key={hg.id} className="hover:bg-transparent">
               {hg.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead key={header.id} className="h-10">
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -146,7 +191,7 @@ export function TimesheetDataTable({
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.length === 0 ? (
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableCell
                 colSpan={columns.length}
                 className="h-24 text-center text-muted-foreground"
@@ -158,7 +203,7 @@ export function TimesheetDataTable({
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} className="py-3">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

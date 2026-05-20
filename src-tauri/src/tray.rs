@@ -295,6 +295,9 @@ async fn refresh_tray_snapshot(app: &AppHandle) -> TraySnapshot {
         if let Some(timer) = active.into_iter().next() {
             snapshot.active_timer_id = Some(timer.id);
             snapshot.duration_secs = parse_begin_elapsed(&timer.begin);
+        } else {
+            snapshot.active_timer_id = None;
+            snapshot.duration_secs = None;
         }
     }
 
@@ -489,7 +492,8 @@ pub fn update_tray_icon(app: &AppHandle, duration_secs: Option<i64>) {
                 let title = format_tray_duration(secs);
                 let _ = tray.set_title(Some(title.as_str()));
             } else {
-                let _ = tray.set_title(None::<&str>);
+                // Leerer Titel entfernt die Zeitanzeige neben dem Icon (nur Icon sichtbar).
+                let _ = tray.set_title(Some(""));
             }
         }
     }
