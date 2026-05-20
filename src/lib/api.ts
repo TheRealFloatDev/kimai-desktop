@@ -38,6 +38,12 @@ export const kimaiApi = {
   getActivities: (projectId?: number) =>
     invoke<ActivityCollection[]>("get_activities", { projectId }),
 
+  getTags: (name?: string) =>
+    invoke<string[]>("get_tags", { name: name || null }),
+
+  createTag: (name: string) =>
+    invoke<{ id: number; name: string }>("create_tag", { name }),
+
   getActiveTimer: () =>
     invoke<TimesheetCollectionExpanded | null>("get_active_timer"),
 

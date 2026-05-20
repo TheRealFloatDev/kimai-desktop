@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { TagsCombobox, tagsToKimaiString } from "@/components/tags/TagsCombobox";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -44,7 +44,7 @@ export function TimesheetEditDialog({
   const [begin, setBegin] = useState<string | undefined>();
   const [end, setEnd] = useState<string | undefined>();
   const [description, setDescription] = useState("");
-  const [tags, setTags] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   const [billable, setBillable] = useState(true);
 
   const { data: projects = [] } = useProjects(undefined, true);
@@ -60,7 +60,7 @@ export function TimesheetEditDialog({
     setBegin(timesheet.begin);
     setEnd(timesheet.end);
     setDescription(timesheet.description ?? "");
-    setTags(timesheet.tags?.join(", ") ?? "");
+    setTags(timesheet.tags ?? []);
     setBillable(timesheet.billable ?? true);
   }, [timesheet]);
 
@@ -75,7 +75,7 @@ export function TimesheetEditDialog({
           begin,
           end,
           description: description || undefined,
-          tags: tags || undefined,
+          tags: tagsToKimaiString(tags),
           billable,
         },
       },
@@ -139,7 +139,7 @@ export function TimesheetEditDialog({
           </div>
           <div className="space-y-2">
             <Label>{t("timer.formTags")}</Label>
-            <Input value={tags} onChange={(e) => setTags(e.target.value)} />
+            <TagsCombobox value={tags} onChange={setTags} />
           </div>
           <div className="flex items-center gap-2">
             <Checkbox

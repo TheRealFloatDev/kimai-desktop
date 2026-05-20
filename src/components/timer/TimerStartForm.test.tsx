@@ -18,6 +18,8 @@ vi.mock("@/hooks/useApi", () => ({
     isPending: false,
     isError: false,
   })),
+  useTags: vi.fn(() => ({ data: [], isLoading: false })),
+  useCreateTag: vi.fn(() => ({ mutateAsync: vi.fn(), isPending: false })),
 }));
 
 describe("TimerStartForm", () => {

@@ -10,7 +10,8 @@ mod tray;
 
 use commands::{
     clear_stored_credentials, clear_timer_display_anchor, delete_timesheet, get_active_timer,
-    get_activities, get_app_preferences, get_credentials, get_customers, get_me, get_projects,
+    create_tag, get_activities, get_app_preferences, get_credentials, get_customers, get_me,
+    get_projects, get_tags,
     get_recent, get_timer_display_seconds, get_today_timesheets, get_working_stats,
     list_timesheets, reset_timer_display_anchor, restart_timer, set_app_locale,
     set_autostart_enabled, set_credentials, start_timer, stop_timer, update_timesheet,
@@ -74,6 +75,8 @@ pub fn run() {
             get_customers,
             get_projects,
             get_activities,
+            get_tags,
+            create_tag,
             get_app_preferences,
             set_app_locale,
             set_autostart_enabled,

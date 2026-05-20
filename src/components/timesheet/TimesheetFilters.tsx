@@ -45,78 +45,78 @@ export function TimesheetFilters({
   };
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-      <div className="space-y-2 lg:col-span-2">
-        <Label>{t("history.period")}</Label>
-        <DateRangePicker
-          value={dateRange ?? kimaiRangeToDateRange(filters.begin, filters.end)}
-          onChange={handleDateRange}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label>{t("history.customer")}</Label>
-        <Select
-          value={filters.customer ? String(filters.customer) : "all"}
-          onValueChange={(v) =>
-            onChange({
-              ...filters,
-              customer: v === "all" ? undefined : Number(v),
-              project: undefined,
-            })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={t("history.all")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("history.all")}</SelectItem>
-            {customers.map((c) => (
-              <SelectItem key={c.id} value={String(c.id)}>
-                {c.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="space-y-2">
-        <Label>{t("history.project")}</Label>
-        <Select
-          value={filters.project ? String(filters.project) : "all"}
-          onValueChange={(v) =>
-            onChange({
-              ...filters,
-              project: v === "all" ? undefined : Number(v),
-            })
-          }
-          disabled={!filters.customer}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={t("history.all")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("history.all")}</SelectItem>
-            {projects.map((p) => (
-              <SelectItem key={p.id} value={String(p.id)}>
-                {p.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="space-y-2 lg:col-span-4">
-        <Label>{t("history.search")}</Label>
-        <div className="flex gap-2">
-          <Input
-            value={filters.term ?? ""}
-            onChange={(e) => onChange({ ...filters, term: e.target.value })}
-            placeholder={t("history.searchPlaceholder")}
-            onKeyDown={(e) => e.key === "Enter" && onSearch()}
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="w-full shrink-0 space-y-2 sm:w-auto sm:max-w-[220px]">
+          <Label>{t("history.period")}</Label>
+          <DateRangePicker
+            value={dateRange ?? kimaiRangeToDateRange(filters.begin, filters.end)}
+            onChange={handleDateRange}
           />
-          <Button onClick={onSearch}>
-            <Search className="mr-2 h-4 w-4" />
-            {t("history.searchButton")}
-          </Button>
         </div>
+        <div className="min-w-0 flex-1 space-y-2">
+          <Label>{t("history.customer")}</Label>
+          <Select
+            value={filters.customer ? String(filters.customer) : "all"}
+            onValueChange={(v) =>
+              onChange({
+                ...filters,
+                customer: v === "all" ? undefined : Number(v),
+                project: undefined,
+              })
+            }
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={t("history.all")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("history.all")}</SelectItem>
+              {customers.map((c) => (
+                <SelectItem key={c.id} value={String(c.id)}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="min-w-0 flex-1 space-y-2">
+          <Label>{t("history.project")}</Label>
+          <Select
+            value={filters.project ? String(filters.project) : "all"}
+            onValueChange={(v) =>
+              onChange({
+                ...filters,
+                project: v === "all" ? undefined : Number(v),
+              })
+            }
+            disabled={!filters.customer}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={t("history.all")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("history.all")}</SelectItem>
+              {projects.map((p) => (
+                <SelectItem key={p.id} value={String(p.id)}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <Input
+          className="h-9"
+          value={filters.term ?? ""}
+          onChange={(e) => onChange({ ...filters, term: e.target.value })}
+          placeholder={t("history.searchPlaceholder")}
+          onKeyDown={(e) => e.key === "Enter" && onSearch()}
+        />
+        <Button size="icon" className="h-9 w-9 shrink-0" onClick={onSearch}>
+          <Search className="h-4 w-4" />
+          <span className="sr-only">{t("history.searchButton")}</span>
+        </Button>
       </div>
     </div>
   );

@@ -2,6 +2,14 @@ import { createRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { HistoryList } from "@/components/timesheet/HistoryList";
 import { TimesheetEditDialog } from "@/components/timesheet/TimesheetEditDialog";
 import { TimesheetFilters } from "@/components/timesheet/TimesheetFilters";
@@ -42,6 +50,7 @@ function HistoryPage() {
   const [editTarget, setEditTarget] =
     useState<TimesheetCollectionExpanded | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const {
     data: timesheets = [],
@@ -52,8 +61,15 @@ function HistoryPage() {
   } = useTimesheets(appliedFilters);
   const deleteTimesheet = useDeleteTimesheet();
 
+  const handleConfirmDelete = () => {
+    if (deleteId == null) return;
+    deleteTimesheet.mutate(deleteId, {
+      onSuccess: () => setDeleteId(null),
+    });
+  };
+
   return (
-    <div className="mx-auto flex h-full min-h-0 max-w-5xl flex-col gap-8">
+    <div className="mx-auto flex h-full min-h-0 w-full max-w-5xl flex-col gap-4">
       <header className="shrink-0">
         <h2 className="text-2xl font-semibold tracking-tight">
           {t("history.title")}
@@ -86,7 +102,7 @@ function HistoryPage() {
           </AlertDescription>
         </Alert>
       )}
-      <div className="min-h-0 flex-1 overflow-auto">
+      <div className="min-h-0 flex-1 overflow-y-auto">
         {isLoading && (
           <p className="text-muted-foreground">{t("history.loading")}</p>
         )}
@@ -97,11 +113,11 @@ function HistoryPage() {
               setEditTarget(ts);
               setEditOpen(true);
             }}
-            onDelete={(id) => deleteTimesheet.mutate(id)}
+            onDelete={(id) => setDeleteId(id)}
           />
         )}
       </div>
-      <div className="flex shrink-0 justify-between">
+      <div className="flex shrink-0 justify-between pt-1">
         <Button
           variant="outline"
           disabled={(appliedFilters.page ?? 1) <= 1}
@@ -124,6 +140,30 @@ function HistoryPage() {
           {t("history.next")}
         </Button>
       </div>
+
+      <Dialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("history.deleteConfirmTitle")}</DialogTitle>
+            <DialogDescription>
+              {t("history.deleteConfirmDescription")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteId(null)}>
+              {t("history.editCancel")}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={deleteTimesheet.isPending}
+            >
+              {t("history.delete")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <TimesheetEditDialog
         timesheet={editTarget}
         open={editOpen}

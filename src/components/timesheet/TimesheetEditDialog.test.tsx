@@ -14,6 +14,8 @@ vi.mock("@/hooks/useApi", () => ({
     mutate: vi.fn(),
     isPending: false,
   })),
+  useTags: vi.fn(() => ({ data: [], isLoading: false })),
+  useCreateTag: vi.fn(() => ({ mutateAsync: vi.fn(), isPending: false })),
 }));
 
 describe("TimesheetEditDialog", () => {

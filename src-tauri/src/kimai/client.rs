@@ -33,6 +33,12 @@ pub struct ProjectCollection {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TagEntity {
+    pub id: i64,
+    pub name: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ActivityCollection {
     pub id: i64,
     pub name: String,
@@ -324,6 +330,23 @@ impl KimaiClient {
             path.push_str(&format!("&customer={}", id));
         }
         self.get(&path).await
+    }
+
+    pub async fn get_tags(&self, name: Option<&str>) -> Result<Vec<String>, String> {
+        let mut path = "/api/tags".to_string();
+        if let Some(term) = name.filter(|s| !s.trim().is_empty()) {
+            let encoded = urlencoding::encode(term.trim());
+            path.push_str(&format!("?name={encoded}"));
+        }
+        self.get(&path).await
+    }
+
+    pub async fn create_tag(&self, name: &str) -> Result<TagEntity, String> {
+        #[derive(Serialize)]
+        struct TagEditForm<'a> {
+            name: &'a str,
+        }
+        self.post("/api/tags", &TagEditForm { name }).await
     }
 
     pub async fn get_activities(

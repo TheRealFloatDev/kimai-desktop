@@ -11,6 +11,7 @@ export const queryKeys = {
   customers: ["customers"] as const,
   projects: (customerId?: number) => ["projects", customerId] as const,
   activities: (projectId?: number) => ["activities", projectId] as const,
+  tags: (search?: string) => ["tags", search] as const,
   activeTimer: ["activeTimer"] as const,
   todayTimesheets: ["todayTimesheets"] as const,
   recent: (size?: number) => ["recent", size] as const,
@@ -42,6 +43,24 @@ export const useActivities = (projectId?: number) =>
     queryFn: () => kimaiApi.getActivities(projectId),
     enabled: !!projectId,
   });
+
+export const useTags = (search: string, enabled = true) =>
+  useQuery({
+    queryKey: queryKeys.tags(search),
+    queryFn: () => kimaiApi.getTags(search || undefined),
+    enabled,
+    staleTime: 30_000,
+  });
+
+export const useCreateTag = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (name: string) => kimaiApi.createTag(name),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tags"] });
+    },
+  });
+};
 
 export const useActiveTimer = () =>
   useQuery({

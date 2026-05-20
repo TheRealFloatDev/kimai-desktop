@@ -3,7 +3,7 @@ import { Play } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
+import { TagsCombobox, tagsToKimaiString } from "@/components/tags/TagsCombobox";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -31,7 +31,7 @@ export function TimerStartForm({ onSuccess }: TimerStartFormProps) {
   const [projectId, setProjectId] = useState("");
   const [activityId, setActivityId] = useState("");
   const [description, setDescription] = useState("");
-  const [tags, setTags] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   const [billable, setBillable] = useState(true);
 
   const { data: customers = [] } = useCustomers();
@@ -50,7 +50,7 @@ export function TimerStartForm({ onSuccess }: TimerStartFormProps) {
         projectId: Number(projectId),
         activityId: Number(activityId),
         description: description || undefined,
-        tags: tags || undefined,
+        tags: tagsToKimaiString(tags),
         billable,
       },
       { onSuccess },
@@ -136,9 +136,9 @@ export function TimerStartForm({ onSuccess }: TimerStartFormProps) {
 
       <div className="space-y-2">
         <Label>{t("timer.formTags")}</Label>
-        <Input
+        <TagsCombobox
           value={tags}
-          onChange={(e) => setTags(e.target.value)}
+          onChange={setTags}
           placeholder={t("timer.formTagsPlaceholder")}
         />
       </div>
