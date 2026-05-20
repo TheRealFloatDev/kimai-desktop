@@ -1,8 +1,12 @@
+import CZ from "country-flag-icons/react/3x2/CZ";
 import DE from "country-flag-icons/react/3x2/DE";
 import ES from "country-flag-icons/react/3x2/ES";
 import FR from "country-flag-icons/react/3x2/FR";
 import GB from "country-flag-icons/react/3x2/GB";
+import IT from "country-flag-icons/react/3x2/IT";
 import NL from "country-flag-icons/react/3x2/NL";
+import PL from "country-flag-icons/react/3x2/PL";
+import PT from "country-flag-icons/react/3x2/PT";
 import type { Locale } from "@/i18n";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +16,10 @@ const FLAG_BY_LOCALE = {
   nl: NL,
   fr: FR,
   es: ES,
+  it: IT,
+  pl: PL,
+  pt: PT,
+  cs: CZ,
 } as const;
 
 export function LocaleFlag({

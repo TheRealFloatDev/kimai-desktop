@@ -5,6 +5,10 @@ const DE: &str = include_str!("../../src/locales/de.json");
 const NL: &str = include_str!("../../src/locales/nl.json");
 const FR: &str = include_str!("../../src/locales/fr.json");
 const ES: &str = include_str!("../../src/locales/es.json");
+const IT: &str = include_str!("../../src/locales/it.json");
+const PL: &str = include_str!("../../src/locales/pl.json");
+const PT: &str = include_str!("../../src/locales/pt.json");
+const CS: &str = include_str!("../../src/locales/cs.json");
 
 fn locale_json(locale: &str) -> &'static str {
     match locale {
@@ -12,6 +16,10 @@ fn locale_json(locale: &str) -> &'static str {
         "nl" => NL,
         "fr" => FR,
         "es" => ES,
+        "it" => IT,
+        "pl" => PL,
+        "pt" => PT,
+        "cs" => CS,
         _ => EN,
     }
 }

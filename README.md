@@ -13,7 +13,7 @@ A native desktop client for [Kimai](https://www.kimai.org/) time tracking — bu
 - **Background operation** — Closing the window hides the app; quit fully via tray **Quit**
 - **Auto-start** — Optional launch at login
 - **Updates** — In-app updater via GitHub Releases (sidebar notification)
-- **Languages** — English, German, Dutch, French, Spanish
+- **Languages** — English, German, Dutch, French, Spanish, Italian, Polish, Portuguese, Czech
 
 API credentials are stored locally via Tauri Stronghold; requests run through the Rust backend so the token never reaches the webview.
 

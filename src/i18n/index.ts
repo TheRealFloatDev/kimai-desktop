@@ -1,19 +1,43 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import cs from "@/locales/cs.json";
 import de from "@/locales/de.json";
 import en from "@/locales/en.json";
 import es from "@/locales/es.json";
 import fr from "@/locales/fr.json";
+import it from "@/locales/it.json";
 import nl from "@/locales/nl.json";
+import pl from "@/locales/pl.json";
+import pt from "@/locales/pt.json";
 import { kimaiApi } from "@/lib/api";
 
-export const LOCALES = ["en", "de", "nl", "fr", "es"] as const;
+export const LOCALES = [
+  "en",
+  "de",
+  "nl",
+  "fr",
+  "es",
+  "it",
+  "pl",
+  "pt",
+  "cs",
+] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "en";
 
 type Messages = typeof en;
 
-const messages: Record<Locale, Messages> = { en, de, nl, fr, es };
+const messages: Record<Locale, Messages> = {
+  en,
+  de,
+  nl,
+  fr,
+  es,
+  it,
+  pl,
+  pt,
+  cs,
+};
 
 function getNested(obj: Record<string, unknown>, path: string): string | undefined {
   const parts = path.split(".");

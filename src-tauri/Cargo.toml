@@ -1,7 +1,7 @@
 [package]
 name = "kimai-desktop"
-version = "0.1.0"
-description = "A Tauri App"
+version = "0.1.1"
+description = "Unofficial Kimai (Time Tracker) Desktop App for Mac, Windows & Linux"
 authors = ["you"]
 edition = "2021"
 

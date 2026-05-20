@@ -17,7 +17,11 @@
     "de": "Duits",
     "nl": "Nederlands",
     "fr": "Frans",
-    "es": "Spaans"
+    "es": "Spaans",
+    "it": "Italiaans",
+    "pl": "Pools",
+    "pt": "Portugees",
+    "cs": "Tsjechisch"
   },
   "theme": {
     "label": "Thema",

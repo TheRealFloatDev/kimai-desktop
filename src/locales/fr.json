@@ -17,7 +17,11 @@
     "de": "Allemand",
     "nl": "Néerlandais",
     "fr": "Français",
-    "es": "Espagnol"
+    "es": "Espagnol",
+    "it": "Italien",
+    "pl": "Polonais",
+    "pt": "Portugais",
+    "cs": "Tchèque"
   },
   "theme": {
     "label": "Thème",
