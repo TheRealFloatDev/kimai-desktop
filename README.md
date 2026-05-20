@@ -4,6 +4,12 @@ A native desktop client for [Kimai](https://www.kimai.org/) time tracking — bu
 
 ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
 
+## Screenshots
+
+| Dashboard | System tray (macOS) |
+| --- | --- |
+| ![Dashboard](demo/dashboard-demo.png) | ![System tray](demo/tray-demo.png) |
+
 ## Features
 
 - **Timer** — Start, stop, and restart time entries with customer, project, activity, description, and tags
@@ -13,7 +19,7 @@ A native desktop client for [Kimai](https://www.kimai.org/) time tracking — bu
 - **Background operation** — Closing the window hides the app; quit fully via tray **Quit**
 - **Auto-start** — Optional launch at login
 - **Updates** — In-app updater via GitHub Releases (sidebar notification)
-- **Languages** — English, German, Dutch, French, Spanish
+- **Languages** — English, German, Dutch, French, Spanish, Italian, Polish, Portuguese, Czech (switchable in Settings)
 
 API credentials are stored locally via Tauri Stronghold; requests run through the Rust backend so the token never reaches the webview.
 
@@ -57,6 +63,7 @@ On first launch, enter your Kimai **base URL** (without `/api`, e.g. `https://ki
 ```
 src/                 React UI (routes, components, hooks)
 src-tauri/           Rust backend (Kimai API, tray, credentials)
+demo/                README screenshots
 docs/RELEASES.md     CI releases & updater signing
 ```
 
